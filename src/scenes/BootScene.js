@@ -15,7 +15,7 @@ export default class BootScene extends Phaser.Scene {
     this.makeBoxTexture('plank', 120, 26, 0xb07d3b, 0x7c5526);
     this.makeRoundTexture('target', 88, 88, 0x6ad0ff, 0x1f6f9c);
 
-    this.scene.start('Game');
+    this.scene.start('Intro');
   }
 
   // Renders an emoji to a canvas and registers it as a texture, so the Matter
