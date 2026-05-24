@@ -1,0 +1,17 @@
+{
+  "name": "somnoroase-pasarele",
+  "version": "0.0.1",
+  "description": "Sleepy Birds — an Angry Birds-style physics game that teaches a little Romanian",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "phaser": "^3.88.2"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

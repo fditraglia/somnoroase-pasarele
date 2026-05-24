@@ -14,12 +14,36 @@ Romanian language content will be layered in once the game feel is right.
 
 ## Concept
 
-Launch sleepy birds at structures to wake/knock down targets. The Romanian
-learning element is woven into the core loop (exact design in progress).
+A prompt shows you a **Romanian word**. Three perched targets each show a
+picture + English word — one of them matches. Pull back the slingshot, launch a
+sleepy bird, and knock down the **correct** target to score. Hit the wrong one
+and you learn what it actually was. Aim, physics, and vocabulary in one loop.
+
+The word list lives in [`src/data/words.js`](src/data/words.js) and is
+deliberately pluggable — the prototype is about getting the *game feel* right
+before we layer in real curriculum from the companion `limba-română` material.
 
 ## Development
 
-_Stack and run instructions will be added as the prototype takes shape._
+Built with [Phaser 3](https://phaser.io/) (Matter physics) + [Vite](https://vitejs.dev/).
+
+```bash
+npm install
+npm run dev      # local dev server with hot reload
+npm run build    # production build into dist/
+```
+
+### How to play
+
+- **Drag** the bird back from the slingshot and **release** to launch.
+- A dotted arc previews your trajectory while you aim.
+- You get 3 birds per round. Find the word shown at the top!
+
+## Deployment
+
+Pushes to `main` auto-deploy to **GitHub Pages** via
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml). Enable it once in
+**Settings → Pages → Build and deployment → Source: GitHub Actions**.
 
 ## Acknowledgements
 
