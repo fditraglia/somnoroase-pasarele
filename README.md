@@ -7,7 +7,7 @@ The name comes from Mihai Eminescu's beloved poem **"Somnoroase păsărele"**
 ("Sleepy little birds"), a Romanian lullaby about birds settling down to sleep
 at dusk.
 
-**▶ Play it: https://ditraglia.com/somnoroase-pasarele/**
+**▶ Play it: https://sleepy-birds.com/**
 
 ## Concept
 
