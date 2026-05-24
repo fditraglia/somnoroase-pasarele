@@ -48,6 +48,15 @@ export default class GameScene extends Phaser.Scene {
       friction: 0.8,
       label: 'ground',
     });
+
+    // Invisible side walls only: nothing can escape left or right (horizontal
+    // escape has no restoring force, so it'd be lost forever). The top is left
+    // open on purpose — gravity is the ceiling, so high parabolas can sail off
+    // the top of the screen and arc back down, and anything knocked upward
+    // always falls back into the field.
+    const wall = { isStatic: true, friction: 0, restitution: 0.2, label: 'wall' };
+    this.matter.add.rectangle(-25, 0, 50, GAME_HEIGHT * 4, wall); // left
+    this.matter.add.rectangle(GAME_WIDTH + 25, 0, 50, GAME_HEIGHT * 4, wall); // right
   }
 
   buildSlingshot() {
@@ -66,6 +75,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   spawnBird() {
+    // starts asleep (closed eyes); swaps to 'birdAwake' the moment it launches
     this.bird = this.matter.add.image(ANCHOR.x, ANCHOR.y, 'bird');
     this.bird.setCircle(24);
     this.bird.setFriction(0.6);
@@ -74,16 +84,23 @@ export default class GameScene extends Phaser.Scene {
     this.bird.setStatic(true);
     this.bird.setDepth(4);
 
-    // a couple of closed "sleepy" eyes for charm
-    this.birdFace = this.add.text(ANCHOR.x, ANCHOR.y - 2, '-_-', {
-      fontFamily: 'monospace',
-      fontSize: '18px',
-      color: '#5a3a1b',
-    }).setOrigin(0.5).setDepth(5);
+    // a little 💤 that floats above the bird while it dozes in the cradle,
+    // and disappears the moment it launches
+    this.zzz = this.add.text(ANCHOR.x + 16, ANCHOR.y - 28, '💤', {
+      fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
+      fontSize: '22px',
+    }).setOrigin(0.5).setDepth(6);
 
     this.launched = false;
     this.dragging = false;
     this.restFrames = 0;
+  }
+
+  clearZzz() {
+    if (this.zzz) {
+      this.zzz.destroy();
+      this.zzz = null;
+    }
   }
 
   // Tears down the current bird (in-flight or cradled) and resets flight state.
@@ -92,10 +109,7 @@ export default class GameScene extends Phaser.Scene {
       this.bird.destroy();
       this.bird = null;
     }
-    if (this.birdFace) {
-      this.birdFace.destroy();
-      this.birdFace = null;
-    }
+    this.clearZzz();
     this.launched = false;
     this.dragging = false;
     this.restFrames = 0;
@@ -134,21 +148,25 @@ export default class GameScene extends Phaser.Scene {
     this.updateBirdsHud();
   }
 
-  // Static target perched on a static pedestal: it holds its position so it
-  // can never be knocked off-screen, and a clean touch is all that scores it.
+  // Knock-down-able target perched on a tower of boxes. The screen-edge walls
+  // (see buildWorld) keep it from ever leaving the field, so it stays hittable.
+  // Touching the *correct* target with the bird is what scores the round.
   buildTarget(x, word, level) {
-    const perchTop = GROUND_Y - 110 - level * 95;
-
+    const towerH = level + 1; // 1..3 boxes -> varied perch heights
     const boxes = [];
-    for (let by = GROUND_Y - 30; by > perchTop + 30; by -= 60) {
+    for (let row = 0; row < towerH; row += 1) {
+      const by = GROUND_Y - 30 - row * 60;
       boxes.push(
-        this.matter.add.image(x, by, 'box').setStatic(true).setFriction(0.9).setDepth(2),
+        this.matter.add.image(x, by, 'box').setFriction(0.8).setBounce(0.1).setDepth(2),
       );
     }
 
+    const perchTop = GROUND_Y - 30 - towerH * 60 - 44;
     const go = this.matter.add.image(x, perchTop, 'target');
-    go.setRectangle(88, 88, { isStatic: true, chamfer: { radius: 14 } });
-    go.setStatic(true);
+    go.setRectangle(88, 88, { chamfer: { radius: 14 } });
+    go.setFriction(0.8);
+    go.setBounce(0.1);
+    go.setDensity(0.003);
     go.setDepth(3);
     go.isTarget = true;
     go.word = word;
@@ -240,7 +258,6 @@ export default class GameScene extends Phaser.Scene {
       const x = ANCHOR.x + Math.cos(angle) * dist;
       const y = ANCHOR.y + Math.sin(angle) * dist;
       this.bird.setPosition(x, y);
-      this.birdFace.setPosition(x, y - 2);
     });
 
     this.input.on('pointerup', () => {
@@ -256,7 +273,7 @@ export default class GameScene extends Phaser.Scene {
       this.bird.setStatic(false);
       this.bird.setVelocity(dx * LAUNCH_POWER, dy * LAUNCH_POWER);
       this.bird.setAngularVelocity(0.05);
-      this.birdFace.setText('o_o'); // wide awake now!
+      this.clearZzz(); // the 💤 drops away — it's awake now!
       this.launched = true;
     });
   }
@@ -303,9 +320,10 @@ export default class GameScene extends Phaser.Scene {
 
   // --------------------------------------------------------------- update ----
   update() {
-    // keep the sleepy face riding along with the bird
-    if (this.bird && this.launched) {
-      this.birdFace.setPosition(this.bird.x, this.bird.y - 2);
+    // float the 💤 just above the dozing bird, with a gentle bob
+    if (this.zzz && this.bird && !this.launched) {
+      const bob = Math.sin(this.time.now / 300) * 3;
+      this.zzz.setPosition(this.bird.x + 16, this.bird.y - 28 + bob);
     }
 
     // keep emoji labels glued to their (possibly toppling) targets
