@@ -24,6 +24,9 @@ export default class GameScene extends Phaser.Scene {
     this.bindInput();
     this.bindCollisions();
 
+    // dev-only handle for automated playtesting in a headless browser
+    if (import.meta.env.DEV) window.__scene = this;
+
     this.startRound();
   }
 
@@ -59,8 +62,7 @@ export default class GameScene extends Phaser.Scene {
 
     this.bandGfx = this.add.graphics().setDepth(3);
     this.aimGfx = this.add.graphics().setDepth(2);
-
-    this.spawnBird();
+    // the bird is spawned by startRound(), which owns the round lifecycle
   }
 
   spawnBird() {
@@ -84,11 +86,29 @@ export default class GameScene extends Phaser.Scene {
     this.restFrames = 0;
   }
 
+  // Tears down the current bird (in-flight or cradled) and resets flight state.
+  clearBird() {
+    if (this.bird) {
+      this.bird.destroy();
+      this.bird = null;
+    }
+    if (this.birdFace) {
+      this.birdFace.destroy();
+      this.birdFace = null;
+    }
+    this.launched = false;
+    this.dragging = false;
+    this.restFrames = 0;
+  }
+
   // --------------------------------------------------------------- rounds ----
   startRound() {
+    // fully reset the field before building the next round, so nothing from
+    // the previous shot lingers or steals a bird from this round
+    this.clearBird();
+    this.clearTargets();
     this.roundResolved = false;
     this.birdsLeft = BIRDS_PER_ROUND;
-    this.clearTargets();
 
     // choose answer + distractors
     const pool = Phaser.Utils.Array.Shuffle([...WORDS]);
@@ -96,34 +116,39 @@ export default class GameScene extends Phaser.Scene {
     this.answer = chosen[0];
     const placement = Phaser.Utils.Array.Shuffle([...chosen]);
 
-    // spread targets across the right two-thirds of the field
+    // spread targets across the right two-thirds of the field, at varied
+    // heights so aiming is a real precision challenge
     const startX = GAME_WIDTH * 0.45;
     const gap = (GAME_WIDTH * 0.5) / TARGET_COUNT;
+    const levels = Phaser.Utils.Array.Shuffle([0, 1, 2]);
 
     this.targets = placement.map((word, i) => {
       const x = startX + gap * i + gap * 0.5;
-      return this.buildTarget(x, word);
+      return this.buildTarget(x, word, levels[i % levels.length]);
     });
 
     this.promptText.setText(this.answer.ro);
     this.hintText.setText('Find the "' + this.answer.ro + '"');
     this.feedbackText.setText('');
+    this.spawnBird();
     this.updateBirdsHud();
   }
 
-  buildTarget(x, word) {
-    // a little tower of boxes for the target to perch on (knock-down feel)
-    const towerH = Phaser.Math.Between(1, 3);
+  // Static target perched on a static pedestal: it holds its position so it
+  // can never be knocked off-screen, and a clean touch is all that scores it.
+  buildTarget(x, word, level) {
+    const perchTop = GROUND_Y - 110 - level * 95;
+
     const boxes = [];
-    for (let row = 0; row < towerH; row += 1) {
-      const by = GROUND_Y - 30 - row * 60;
-      boxes.push(this.matter.add.image(x, by, 'box').setFriction(0.7).setDepth(2));
+    for (let by = GROUND_Y - 30; by > perchTop + 30; by -= 60) {
+      boxes.push(
+        this.matter.add.image(x, by, 'box').setStatic(true).setFriction(0.9).setDepth(2),
+      );
     }
 
-    const perchTop = GROUND_Y - 30 - towerH * 60 - 44;
     const go = this.matter.add.image(x, perchTop, 'target');
-    go.setRectangle(88, 88, { friction: 0.7, chamfer: { radius: 14 } });
-    go.setDensity(0.002);
+    go.setRectangle(88, 88, { isStatic: true, chamfer: { radius: 14 } });
+    go.setStatic(true);
     go.setDepth(3);
     go.isTarget = true;
     go.word = word;
@@ -325,6 +350,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   checkBirdSpent() {
+    if (!this.bird) return;
     const v = this.bird.body.velocity;
     const speed = Math.hypot(v.x, v.y);
     const offscreen = this.bird.x < -60 || this.bird.x > GAME_WIDTH + 60 || this.bird.y > GAME_HEIGHT + 60;
@@ -339,8 +365,7 @@ export default class GameScene extends Phaser.Scene {
 
   recycleBird() {
     this.birdsLeft -= 1;
-    this.bird.destroy();
-    this.birdFace.destroy();
+    this.clearBird();
     this.updateBirdsHud();
 
     if (this.birdsLeft <= 0) {
