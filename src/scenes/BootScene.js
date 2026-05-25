@@ -1,9 +1,14 @@
 import Phaser from 'phaser';
+import treeUrl from '../assets/tree.png';
 
-// Generates all textures procedurally so the prototype needs no asset files.
+// Generates textures procedurally; also loads the one illustrated asset (tree).
 export default class BootScene extends Phaser.Scene {
   constructor() {
     super('Boot');
+  }
+
+  preload() {
+    this.load.image('tree', treeUrl);
   }
 
   create() {

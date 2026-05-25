@@ -3,9 +3,22 @@ import { GAME_WIDTH, GAME_HEIGHT } from '../constants.js';
 import { LEVELS, levelParams } from '../data/words.js';
 
 const GROUND_Y = GAME_HEIGHT - 48;
-const ANCHOR = { x: 180, y: GROUND_Y - 150 };
 const MAX_STRETCH = 120; // how far back the slingshot can be pulled
 const LAUNCH_POWER = 0.22; // drag distance -> velocity multiplier
+
+// Pool of nest perch points on the tree (branch forks/crooks). A round draws a
+// random few of these, so layout varies round to round.
+const NEST_ANCHORS = [
+  { x: 507, y: 443 }, { x: 875, y: 438 }, { x: 795, y: 344 }, { x: 174, y: 368 },
+  { x: 323, y: 297 }, { x: 518, y: 234 }, { x: 555, y: 99 }, { x: 184, y: 112 },
+];
+
+// Pool of bird-launch perches on the tree; one picked per round.
+const BIRD_PERCHES = [
+  { x: 641, y: 415 }, { x: 883, y: 443 }, { x: 915, y: 241 }, { x: 946, y: 316 },
+  { x: 38, y: 313 }, { x: 95, y: 111 }, { x: 534, y: 303 }, { x: 780, y: 81 },
+  { x: 565, y: 50 }, { x: 335, y: 372 }, { x: 329, y: 190 },
+];
 
 export default class GameScene extends Phaser.Scene {
   constructor() {
@@ -26,27 +39,35 @@ export default class GameScene extends Phaser.Scene {
       // isolation; the live knock-down game is untouched without the flag.
       const params = new URLSearchParams(window.location.search);
       this.forceNest = params.get('mode') === 'nest';
+      this.pickModeOn = params.get('layout') === '1';
     }
 
     // tunable alignment for the bird as it rests in a nest (see nestRestPose);
     // adjust live in dev with __scene.tuneNest({ ... }).
     this.nestTune = { scale: 1, hide: 0.08, tilt: -6, dx: 0.05, floatUp: 0.25, sleepDx: 0.2, sleepDy: -0.3 };
 
+    this.perch = BIRD_PERCHES[0]; // default; re-picked each round
     this.score = 0;
     this.levelIndex = 0;
     this.startLevel();
+
+    if (this.pickModeOn) this.time.delayedCall(80, () => this.enterPick());
   }
 
   // ---------------------------------------------------------------- world ----
   buildWorld() {
-    const bg = this.add.graphics();
+    const bg = this.add.graphics().setDepth(-10);
     bg.fillGradientStyle(0x2a2f6b, 0x2a2f6b, 0x4b3a72, 0x7a5a82, 1);
     bg.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-    this.add.circle(GAME_WIDTH - 120, 90, 46, 0xf5f0c8, 0.9);
-    this.add.circle(GAME_WIDTH - 100, 80, 40, 0x4b3a72, 1).setAlpha(0.25);
+    this.add.circle(GAME_WIDTH - 120, 90, 46, 0xf5f0c8, 0.9).setDepth(-9);
+    this.add.circle(GAME_WIDTH - 100, 80, 40, 0x4b3a72, 1).setAlpha(0.25).setDepth(-9);
 
-    this.add.rectangle(GAME_WIDTH / 2, GROUND_Y + 24, GAME_WIDTH, 48, 0x355e3b);
+    this.add.rectangle(GAME_WIDTH / 2, GROUND_Y + 24, GAME_WIDTH, 48, 0x355e3b).setDepth(-8);
+
+    // the illustrated tree the nests perch in — behind all the play sprites
+    this.add.image(0, GAME_HEIGHT, 'tree').setOrigin(0, 1).setDisplaySize(GAME_WIDTH, GAME_HEIGHT).setDepth(-5);
+
     this.matter.add.rectangle(GAME_WIDTH / 2, GROUND_Y + 24, GAME_WIDTH, 48, {
       isStatic: true,
       friction: 0.8,
@@ -62,20 +83,13 @@ export default class GameScene extends Phaser.Scene {
   }
 
   buildSlingshot() {
-    const g = this.add.graphics();
-    g.lineStyle(10, 0x5a3a1b, 1);
-    g.beginPath();
-    g.moveTo(ANCHOR.x, GROUND_Y);
-    g.lineTo(ANCHOR.x, ANCHOR.y);
-    g.strokePath();
-    g.setDepth(1);
-
+    // the bird perches on the tree itself now — no separate post
     this.bandGfx = this.add.graphics().setDepth(3);
     this.aimGfx = this.add.graphics().setDepth(2);
   }
 
   spawnBird() {
-    this.bird = this.matter.add.image(ANCHOR.x, ANCHOR.y, 'bird');
+    this.bird = this.matter.add.image(this.perch.x, this.perch.y, 'bird');
     this.bird.setCircle(24);
     this.bird.setFriction(0.6);
     this.bird.setBounce(0.35);
@@ -83,7 +97,7 @@ export default class GameScene extends Phaser.Scene {
     this.bird.setStatic(true);
     this.bird.setDepth(7); // flies above the nests' front rims
 
-    this.zzz = this.add.text(ANCHOR.x + 16, ANCHOR.y - 28, '💤', {
+    this.zzz = this.add.text(this.perch.x + 16, this.perch.y - 28, '💤', {
       fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
       fontSize: '22px',
     }).setOrigin(0.5).setDepth(6);
@@ -156,17 +170,24 @@ export default class GameScene extends Phaser.Scene {
     ).slice(0, this.targetCount - 1);
     const placement = Phaser.Utils.Array.Shuffle([this.answer, ...distractors]);
 
-    // spread targets across the right of the field at varied heights
-    const startX = GAME_WIDTH * (this.forceNest ? 0.5 : 0.42);
-    const endX = GAME_WIDTH * (this.forceNest ? 0.86 : 0.95);
-    const tiers = Phaser.Utils.Array.Shuffle([0, 1, 2, 0, 1]);
-    const build = this.forceNest ? this.buildNest : this.buildTarget;
-    this.targets = placement.map((word, i) => {
-      const x = placement.length === 1
-        ? (startX + endX) / 2
-        : startX + ((endX - startX) * i) / (placement.length - 1);
-      return build.call(this, x, word, tiers[i % tiers.length]);
-    });
+    if (this.forceNest) {
+      // well-spaced nests + a perch that isn't directly under/over any of them
+      const layout = this.pickNestLayout(placement.length);
+      this.perch = layout.perch;
+      this.targets = placement.map((word, i) => this.buildNest(layout.anchors[i], word));
+    } else {
+      this.perch = Phaser.Utils.Array.GetRandom(BIRD_PERCHES);
+      // knock-down targets spread across the right of the field at varied heights
+      const startX = GAME_WIDTH * 0.42;
+      const endX = GAME_WIDTH * 0.95;
+      const tiers = Phaser.Utils.Array.Shuffle([0, 1, 2, 0, 1]);
+      this.targets = placement.map((word, i) => {
+        const x = placement.length === 1
+          ? (startX + endX) / 2
+          : startX + ((endX - startX) * i) / (placement.length - 1);
+        return this.buildTarget(x, word, tiers[i % tiers.length]);
+      });
+    }
 
     this.promptText.setText(this.answer.ro);
     this.hintText.setText(this.forceNest
@@ -174,6 +195,34 @@ export default class GameScene extends Phaser.Scene {
       : 'Find the "' + this.answer.ro + '"');
     this.feedbackText.setText('');
     this.spawnBird();
+  }
+
+  // Choose `count` well-spaced nest anchors plus a perch that's horizontally
+  // clear of all of them (no straight-up lobs, no clustering). Falls back
+  // gracefully if the constraints can't all be met.
+  pickNestLayout(count) {
+    const MIN_GAP = 150; // min distance between any two nests
+    const MIN_PDX = 130; // min horizontal gap between perch and every nest
+    const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+    let fallback = null;
+    for (let t = 0; t < 300; t += 1) {
+      const anchors = Phaser.Utils.Array.Shuffle(NEST_ANCHORS.slice()).slice(0, count);
+      let spaced = true;
+      for (let i = 0; i < anchors.length && spaced; i += 1) {
+        for (let j = i + 1; j < anchors.length; j += 1) {
+          if (dist(anchors[i], anchors[j]) < MIN_GAP) { spaced = false; break; }
+        }
+      }
+      if (!spaced) continue;
+      const perch = Phaser.Utils.Array.Shuffle(BIRD_PERCHES.slice())
+        .find((pc) => anchors.every((a) => Math.abs(a.x - pc.x) >= MIN_PDX));
+      if (perch) return { perch, anchors };
+      if (!fallback) fallback = { perch: Phaser.Utils.Array.GetRandom(BIRD_PERCHES), anchors };
+    }
+    return fallback || {
+      perch: Phaser.Utils.Array.GetRandom(BIRD_PERCHES),
+      anchors: Phaser.Utils.Array.Shuffle(NEST_ANCHORS.slice()).slice(0, count),
+    };
   }
 
   buildTarget(x, word, tier) {
@@ -210,11 +259,11 @@ export default class GameScene extends Phaser.Scene {
   // An open-top nest the bird must arc down into, drawn with the 🪹 emoji.
   // Static (opening always faces up → round stays winnable); difficulty comes
   // from opening width + nest height/placement, set by this.landingDifficulty.
-  buildNest(x, word, tier) {
+  buildNest(anchor, word) {
     const landing = this.landingDifficulty ?? 0.4;
-    const cx = x;
+    const cx = anchor.x;
     const size = Phaser.Math.Linear(150, 116, landing);
-    const cyImg = GROUND_Y - size * 0.5 - (18 + tier * 64);
+    const cyImg = anchor.y;
 
     // back layer: the whole nest. front layer: a copy cropped to just the front
     // lip, drawn above the bird so a settled bird is occluded and looks *inside*.
@@ -292,6 +341,174 @@ export default class GameScene extends Phaser.Scene {
     this.bird.setScale(pose.s);
     this.sleepAt(pose.x + nest.size * this.nestTune.sleepDx, pose.y + nest.size * this.nestTune.sleepDy);
     console.log('nestTune =', JSON.stringify(this.nestTune));
+  }
+
+  // dev: drag the 5 nests + the bird onto the tree, then call dumpLayout()
+  enableLayout() {
+    this.layout = true;
+    this.clearTargets();
+    this.clearBird();
+    this.spawnBird();
+    const w = this.level.words;
+    this.targets = NEST_ANCHORS.map((a, i) => this.buildNest({ x: a.x, y: a.y }, w[i % w.length]));
+    this._anchors = NEST_ANCHORS.map((a) => ({ x: a.x, y: a.y }));
+    this._perch = { x: Math.round(this.bird.x), y: Math.round(this.bird.y) };
+
+    this.targets.forEach((t, i) => {
+      t.gfx._idx = i;
+      t.gfx.setInteractive({ draggable: true });
+      this.input.setDraggable(t.gfx);
+    });
+    this.bird._isBird = true;
+    this.bird.setInteractive({ draggable: true });
+    this.input.setDraggable(this.bird);
+
+    this.input.off('drag');
+    this.input.on('drag', (pointer, obj, dx, dy) => {
+      if (obj._isBird) {
+        this.bird.setPosition(dx, dy);
+        if (this.zzz) this.zzz.setPosition(dx + 16, dy - 28);
+        this._perch = { x: Math.round(dx), y: Math.round(dy) };
+      } else if (obj._idx != null) {
+        const t = this.targets[obj._idx];
+        t.gfx.setPosition(dx, dy);
+        t.gfxFront.setPosition(dx, dy);
+        t.label.setPosition(dx, dy + t.size * 0.5 + 4);
+        this._anchors[obj._idx] = { x: Math.round(dx), y: Math.round(dy) };
+      }
+    });
+    console.log('Layout ON — drag the nests + bird, then run __scene.dumpLayout()');
+  }
+
+  dumpLayout() {
+    console.log('NEST_ANCHORS = ' + JSON.stringify(this._anchors));
+    console.log('ANCHOR = ' + JSON.stringify(this._perch));
+  }
+
+  // dev: click the tree to drop anchor points; a ghost nest/bird shows exactly
+  // how it'll sit. __scene.pick('nest') then __scene.pick('perch'), then dumpPicks().
+  pick(kind) {
+    this.layout = true;
+    this._pickKind = kind || 'nest';
+    if (!this._picks) {
+      this._picks = { nest: [], perch: [] };
+      this.clearTargets();
+      this.clearBird();
+      this.promptText.setText('');
+      this.hintText.setText('');
+      const g = this.add.graphics().setDepth(55);
+      g.lineStyle(1, 0xffffff, 0.12);
+      for (let x = 0; x <= GAME_WIDTH; x += 50) g.lineBetween(x, 0, x, GAME_HEIGHT);
+      for (let y = 0; y <= GAME_HEIGHT; y += 50) g.lineBetween(0, y, GAME_WIDTH, y);
+      this.input.on('pointerdown', (pointer) => {
+        const x = Math.round(pointer.worldX);
+        const y = Math.round(pointer.worldY);
+        const list = this._picks[this._pickKind];
+        list.push({ x, y });
+        if (this._pickKind === 'nest') {
+          this.add.image(x, y, 'nest').setDisplaySize(132, 132).setAlpha(0.72).setDepth(58);
+        } else {
+          this.add.image(x, y, 'bird').setDisplaySize(80, 80).setAlpha(0.85).setDepth(58);
+        }
+        this.add.text(x + 6, y - 8, this._pickKind[0] + list.length, {
+          fontSize: '13px', color: '#ffe14d', fontStyle: 'bold',
+        }).setDepth(60);
+        console.log(this._pickKind + ' ' + list.length + ': {x:' + x + ', y:' + y + '}');
+      });
+    }
+    console.log('Picking "' + this._pickKind + '" — click the tree. Switch with __scene.pick("perch"). Dump with __scene.dumpPicks().');
+  }
+
+  dumpPicks() {
+    console.log('NEST_ANCHORS = ' + JSON.stringify(this._picks.nest));
+    console.log('BIRD_PERCHES = ' + JSON.stringify(this._picks.perch));
+  }
+
+  // Visible, no-console layout tool: turned on by ?layout=1. Shows a grid, lets
+  // you click to drop ghost nests/perches, and prints the coordinates ON SCREEN.
+  enterPick() {
+    this.layout = true;
+    this._picks = { nest: [], perch: [] };
+    this._pickKind = 'nest';
+    this.clearTargets();
+    this.clearBird();
+    this.promptText.setText('');
+    this.hintText.setText('');
+
+    const g = this.add.graphics().setDepth(50);
+    g.lineStyle(1, 0xffffff, 0.18);
+    for (let x = 0; x <= GAME_WIDTH; x += 50) g.lineBetween(x, 0, x, GAME_HEIGHT);
+    for (let y = 0; y <= GAME_HEIGHT; y += 50) g.lineBetween(0, y, GAME_WIDTH, y);
+    g.lineStyle(2, 0x66ffdd, 0.6);
+    for (let x = 0; x <= GAME_WIDTH; x += 100) g.lineBetween(x, 0, x, GAME_HEIGHT);
+    for (let y = 0; y <= GAME_HEIGHT; y += 100) g.lineBetween(0, y, GAME_WIDTH, y);
+    for (let x = 100; x <= 1000; x += 100) this.add.text(x + 2, 82, '' + x, { fontSize: '12px', color: '#9fffe6' }).setDepth(51);
+    for (let y = 100; y <= 500; y += 100) this.add.text(4, y + 2, '' + y, { fontSize: '12px', color: '#9fffe6' }).setDepth(51);
+
+    const header = this.add.text(GAME_WIDTH / 2, 110, '', {
+      fontSize: '14px', color: '#ffe14d', fontStyle: 'bold', backgroundColor: '#000a', padding: { x: 8, y: 4 },
+    }).setOrigin(0.5).setDepth(61);
+    const setHeader = () => header.setText(
+      'Add ' + (this._pickKind === 'nest' ? 'NESTS' : 'BIRD PERCHES')
+      + ': click  ·  drag to move  ·  B = switch  ·  Z = undo  ·  C = copy coords');
+    setHeader();
+
+    const readout = this.add.text(8, 128, '', {
+      fontSize: '11px', color: '#bdf', backgroundColor: '#000a', padding: { x: 6, y: 4 }, wordWrap: { width: GAME_WIDTH - 16 },
+    }).setDepth(61);
+    const updateReadout = () => readout.setText(
+      'NESTS: ' + JSON.stringify(this._picks.nest) + '\nPERCHES: ' + JSON.stringify(this._picks.perch));
+
+    this._ghosts = [];
+    const place = (kind, x, y) => {
+      this._picks[kind].push({ x, y });
+      const ghost = (kind === 'nest')
+        ? this.add.image(x, y, 'nest').setDisplaySize(132, 132).setAlpha(0.72).setDepth(58)
+        : this.add.image(x, y, 'bird').setDisplaySize(80, 80).setAlpha(0.85).setDepth(58);
+      const lbl = this.add.text(x + 6, y - 8, '(' + x + ',' + y + ')', {
+        fontSize: '12px', color: '#fff', fontStyle: 'bold', backgroundColor: '#0009',
+      }).setDepth(60);
+      ghost._kind = kind;
+      ghost._lbl = lbl;
+      ghost.setInteractive({ draggable: true });
+      this.input.setDraggable(ghost);
+      this._ghosts.push(ghost);
+      updateReadout();
+    };
+
+    this.input.on('pointerdown', (pointer) => {
+      if (this.input.hitTestPointer(pointer).length) return; // clicked a ghost → drag, don't add
+      place(this._pickKind, Math.round(pointer.worldX), Math.round(pointer.worldY));
+    });
+
+    this.input.on('drag', (pointer, obj, dx, dy) => {
+      const x = Math.round(dx);
+      const y = Math.round(dy);
+      obj.setPosition(x, y);
+      obj._lbl.setPosition(x + 6, y - 8).setText('(' + x + ',' + y + ')');
+      const i = this._ghosts.filter((gh) => gh._kind === obj._kind).indexOf(obj);
+      if (i >= 0) this._picks[obj._kind][i] = { x, y };
+      updateReadout();
+    });
+
+    this.input.keyboard.on('keydown-B', () => { this._pickKind = this._pickKind === 'nest' ? 'perch' : 'nest'; setHeader(); });
+    this.input.keyboard.on('keydown-Z', () => {
+      const g = this._ghosts.pop();
+      if (!g) return;
+      this._picks[g._kind].pop();
+      g._lbl.destroy();
+      g.destroy();
+      updateReadout();
+    });
+    this.input.keyboard.on('keydown-C', () => {
+      const txt = 'NEST_ANCHORS = ' + JSON.stringify(this._picks.nest)
+        + '\nBIRD_PERCHES = ' + JSON.stringify(this._picks.perch);
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).catch(() => {});
+      const note = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'Copied to clipboard!\nPaste it to Claude.', {
+        fontSize: '22px', color: '#9fffb3', fontStyle: 'bold', align: 'center', backgroundColor: '#000c', padding: { x: 16, y: 12 },
+      }).setOrigin(0.5).setDepth(70);
+      this.time.delayedCall(1800, () => note.destroy());
+    });
   }
 
   // The landing payoff: the bird drifts gently straight up just above the nest,
@@ -420,7 +637,7 @@ export default class GameScene extends Phaser.Scene {
                     if (!this.bird) return;
                     this.clearSpeech();
                     this.tweens.add({
-                      targets: pp, x: ANCHOR.x, y: ANCHOR.y, rot: 0,
+                      targets: pp, x: this.perch.x, y: this.perch.y, rot: 0,
                       duration: 850, ease: 'Sine.easeInOut', onUpdate: apply,
                       onComplete: () => onDone && onDone(),
                     });
@@ -544,6 +761,7 @@ export default class GameScene extends Phaser.Scene {
   // --------------------------------------------------------------- input -----
   bindInput() {
     this.input.on('pointerdown', (p) => {
+      if (this.layout) return; // dev layout mode handles its own dragging
       // while an overlay is up, a tap advances it
       if (this.gameState !== 'playing') {
         if (this.overlayTap) {
@@ -560,19 +778,21 @@ export default class GameScene extends Phaser.Scene {
     });
 
     this.input.on('pointermove', (p) => {
+      if (this.layout) return;
       if (!this.dragging || !this.bird) return;
-      const angle = Phaser.Math.Angle.Between(ANCHOR.x, ANCHOR.y, p.x, p.y);
-      const dist = Math.min(MAX_STRETCH, Phaser.Math.Distance.Between(ANCHOR.x, ANCHOR.y, p.x, p.y));
-      this.bird.setPosition(ANCHOR.x + Math.cos(angle) * dist, ANCHOR.y + Math.sin(angle) * dist);
+      const angle = Phaser.Math.Angle.Between(this.perch.x, this.perch.y, p.x, p.y);
+      const dist = Math.min(MAX_STRETCH, Phaser.Math.Distance.Between(this.perch.x, this.perch.y, p.x, p.y));
+      this.bird.setPosition(this.perch.x + Math.cos(angle) * dist, this.perch.y + Math.sin(angle) * dist);
     });
 
     this.input.on('pointerup', () => {
+      if (this.layout) return;
       if (!this.dragging || !this.bird) return;
       this.dragging = false;
-      const dx = ANCHOR.x - this.bird.x;
-      const dy = ANCHOR.y - this.bird.y;
+      const dx = this.perch.x - this.bird.x;
+      const dy = this.perch.y - this.bird.y;
       if (Math.hypot(dx, dy) < 12) {
-        this.bird.setPosition(ANCHOR.x, ANCHOR.y);
+        this.bird.setPosition(this.perch.x, this.perch.y);
         return;
       }
       this.bird.setStatic(false);
@@ -746,19 +966,19 @@ export default class GameScene extends Phaser.Scene {
     if (this.launched || !this.bird) return;
 
     this.bandGfx.lineStyle(6, 0x3a2410, 1);
-    this.bandGfx.lineBetween(ANCHOR.x - 8, ANCHOR.y, this.bird.x, this.bird.y);
-    this.bandGfx.lineBetween(ANCHOR.x + 8, ANCHOR.y, this.bird.x, this.bird.y);
+    this.bandGfx.lineBetween(this.perch.x - 8, this.perch.y, this.bird.x, this.bird.y);
+    this.bandGfx.lineBetween(this.perch.x + 8, this.perch.y, this.bird.x, this.bird.y);
 
     if (this.dragging) {
       let px = this.bird.x;
       let py = this.bird.y;
-      let svx = (ANCHOR.x - this.bird.x) * LAUNCH_POWER;
-      let svy = (ANCHOR.y - this.bird.y) * LAUNCH_POWER;
+      let svx = (this.perch.x - this.bird.x) * LAUNCH_POWER;
+      let svy = (this.perch.y - this.bird.y) * LAUNCH_POWER;
       this.aimGfx.fillStyle(0xffffff, 0.5);
       for (let i = 0; i < 24; i += 1) {
         px += svx;
         py += svy;
-        svy += 0.45; // approx gravity per step
+        svy += 0.23; // gravity per step, matched to the real Matter physics
         if (i % 2 === 0) this.aimGfx.fillCircle(px, py, 3);
         if (py > GROUND_Y) break;
       }
