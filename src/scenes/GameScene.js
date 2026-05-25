@@ -20,7 +20,17 @@ export default class GameScene extends Phaser.Scene {
     this.bindCollisions();
 
     // dev-only handle for automated playtesting in a headless browser
-    if (import.meta.env.DEV) window.__scene = this;
+    if (import.meta.env.DEV) {
+      window.__scene = this;
+      // ?mode=nest plays only nest rounds so the landing feel can be tuned in
+      // isolation; the live knock-down game is untouched without the flag.
+      const params = new URLSearchParams(window.location.search);
+      this.forceNest = params.get('mode') === 'nest';
+    }
+
+    // tunable alignment for the bird as it rests in a nest (see nestRestPose);
+    // adjust live in dev with __scene.tuneNest({ ... }).
+    this.nestTune = { scale: 1, hide: 0.08, tilt: -6, dx: 0.05, floatUp: 0.25, sleepDx: 0.2, sleepDy: -0.3 };
 
     this.score = 0;
     this.levelIndex = 0;
@@ -71,7 +81,7 @@ export default class GameScene extends Phaser.Scene {
     this.bird.setBounce(0.35);
     this.bird.setDensity(0.004);
     this.bird.setStatic(true);
-    this.bird.setDepth(4);
+    this.bird.setDepth(7); // flies above the nests' front rims
 
     this.zzz = this.add.text(ANCHOR.x + 16, ANCHOR.y - 28, '💤', {
       fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
@@ -112,6 +122,15 @@ export default class GameScene extends Phaser.Scene {
     this.usedWords = new Set();
     this.gameState = 'playing';
 
+    // landing demand for nest rounds: 0 = forgiving (wide, short walls),
+    // 1 = demanding (narrow opening, tall walls that force a real arc).
+    this.landingDifficulty = Math.min(this.levelIndex / 4, 1);
+    if (this.forceNest) {
+      // a meaty default for isolated tuning; override live via __scene
+      this.targetCount = 3;
+      this.landingDifficulty = 0.55;
+    }
+
     this.updateHud();
     this.showToast('Level ' + (this.levelIndex + 1) + ' · ' + this.level.theme + ' ' + this.level.icon);
     this.startRound();
@@ -120,6 +139,7 @@ export default class GameScene extends Phaser.Scene {
   startRound() {
     this.clearBird();
     this.clearTargets();
+    this.clearSpeech();
     this.roundResolved = false;
 
     // answer prefers an unused word; distractors come from the same theme
@@ -137,18 +157,21 @@ export default class GameScene extends Phaser.Scene {
     const placement = Phaser.Utils.Array.Shuffle([this.answer, ...distractors]);
 
     // spread targets across the right of the field at varied heights
-    const startX = GAME_WIDTH * 0.42;
-    const endX = GAME_WIDTH * 0.95;
+    const startX = GAME_WIDTH * (this.forceNest ? 0.5 : 0.42);
+    const endX = GAME_WIDTH * (this.forceNest ? 0.86 : 0.95);
     const tiers = Phaser.Utils.Array.Shuffle([0, 1, 2, 0, 1]);
+    const build = this.forceNest ? this.buildNest : this.buildTarget;
     this.targets = placement.map((word, i) => {
       const x = placement.length === 1
         ? (startX + endX) / 2
         : startX + ((endX - startX) * i) / (placement.length - 1);
-      return this.buildTarget(x, word, tiers[i % tiers.length]);
+      return build.call(this, x, word, tiers[i % tiers.length]);
     });
 
     this.promptText.setText(this.answer.ro);
-    this.hintText.setText('Find the "' + this.answer.ro + '"');
+    this.hintText.setText(this.forceNest
+      ? 'Tuck the bird into the "' + this.answer.ro + '" nest'
+      : 'Find the "' + this.answer.ro + '"');
     this.feedbackText.setText('');
     this.spawnBird();
   }
@@ -184,12 +207,277 @@ export default class GameScene extends Phaser.Scene {
     return { go, label, boxes, word };
   }
 
+  // An open-top nest the bird must arc down into, drawn with the 🪹 emoji.
+  // Static (opening always faces up → round stays winnable); difficulty comes
+  // from opening width + nest height/placement, set by this.landingDifficulty.
+  buildNest(x, word, tier) {
+    const landing = this.landingDifficulty ?? 0.4;
+    const cx = x;
+    const size = Phaser.Math.Linear(150, 116, landing);
+    const cyImg = GROUND_Y - size * 0.5 - (18 + tier * 64);
+
+    // back layer: the whole nest. front layer: a copy cropped to just the front
+    // lip, drawn above the bird so a settled bird is occluded and looks *inside*.
+    const img = this.add.image(cx, cyImg, 'nest').setDisplaySize(size, size).setDepth(2);
+    const imgFront = this.add.image(cx, cyImg, 'nest').setDisplaySize(size, size).setDepth(5);
+    const texH = imgFront.frame.realHeight;
+    imgFront.setCrop(0, texH * 0.58, texH, texH * 0.42); // bottom lip only
+
+    // the bowl's opening sits a touch above the emoji's centre; physics walls
+    // run along the visible bowl sides so a flat shot is blocked and you must
+    // drop in from above.
+    const openCy = cyImg - size * 0.04;
+    const openH = size * 0.30;
+    const openW = size * Phaser.Math.Linear(0.50, 0.38, landing);
+    const rimTop = openCy - openH / 2;
+    const floorTopY = openCy + openH / 2;
+    const wallT = 12;
+    const floorThk = 14;
+
+    const solid = { isStatic: true, friction: 0.95, restitution: 0.05, label: 'nest' };
+    const floor = this.matter.add.rectangle(cx, floorTopY + floorThk / 2, openW + 2 * wallT, floorThk, solid);
+    const leftWall = this.matter.add.rectangle(cx - openW / 2 - wallT / 2, openCy, wallT, openH, solid);
+    const rightWall = this.matter.add.rectangle(cx + openW / 2 + wallT / 2, openCy, wallT, openH, solid);
+    const sensor = this.matter.add.rectangle(cx, openCy, openW * 0.9, openH * 0.9, {
+      isStatic: true, isSensor: true, label: 'nestSensor',
+    });
+
+    const label = this.add.text(cx, cyImg + size * 0.5 + 4, word.emoji + '\n' + word.en, {
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '20px',
+      align: 'center',
+      color: '#f3ead6',
+      fontStyle: 'bold',
+      backgroundColor: '#0b1026aa',
+      padding: { x: 8, y: 4 },
+    }).setOrigin(0.5).setDepth(6);
+
+    const nest = { bodies: [floor, leftWall, rightWall], sensor, gfx: img, gfxFront: imgFront, label, word, cx, cyImg, size, restY: floorTopY - 6 };
+    sensor.isNestSensor = true;
+    sensor.word = word;
+    sensor.nest = nest;
+    return nest;
+  }
+
+  // where/how the bird rests in a nest, from this.nestTune + the nest geometry.
+  // The front-rim layer is cropped at 58% down the texture, so its top edge is
+  // at cyImg + 0.08*size; the bird rests `sink` of its height below that line.
+  nestRestPose(nest) {
+    const t = this.nestTune;
+    const s = t.scale; // multiplier on the bird's native size; 1 = no shrink
+    const birdH = 80 * s;
+    const rimTopY = nest.cyImg + 0.08 * nest.size; // top edge of the front lip
+    return {
+      x: nest.cx + t.dx * nest.size,
+      // `hide` = fraction of the bird tucked behind the rim (0 = on top, 0.5 = half)
+      y: rimTopY - (0.5 - t.hide) * birdH,
+      s,
+      rot: Phaser.Math.DegToRad(t.tilt),
+    };
+  }
+
+  // dev: snap a bird into the first nest with the current tune so the landed
+  // look can be dialled in live, e.g. __scene.tuneNest({ sink: 0.25, scale: 0.5 })
+  tuneNest(opts = {}) {
+    Object.assign(this.nestTune, opts);
+    const nest = this.targets && this.targets[0];
+    if (!nest) { console.warn('no nest to tune against'); return; }
+    if (!this.bird) this.spawnBird();
+    this.bird.setStatic(true);
+    this.bird.setVelocity(0, 0);
+    this.bird.setDepth(4);
+    const pose = this.nestRestPose(nest);
+    this.bird.setPosition(pose.x, pose.y);
+    this.bird.setRotation(pose.rot);
+    this.bird.setScale(pose.s);
+    this.sleepAt(pose.x + nest.size * this.nestTune.sleepDx, pose.y + nest.size * this.nestTune.sleepDy);
+    console.log('nestTune =', JSON.stringify(this.nestTune));
+  }
+
+  // The landing payoff: the bird drifts gently straight up just above the nest,
+  // gets its 💤, then settles softly down into the bowl to sleep.
+  animateNestLanding(nest) {
+    this.bird.setStatic(true);
+    this.bird.setVelocity(0, 0);
+    this.bird.setAngularVelocity(0);
+    this.bird.setDepth(4); // tuck behind the nest's front rim → looks inside
+
+    const pose = this.nestRestPose(nest);
+    const aboveY = pose.y - this.nestTune.floatUp * nest.size;
+    const pp = { x: this.bird.x, y: this.bird.y, rot: this.bird.rotation, s: this.bird.scaleX };
+    const apply = () => {
+      if (!this.bird) return;
+      this.bird.setPosition(pp.x, pp.y);
+      this.bird.setRotation(pp.rot);
+      this.bird.setScale(pp.s);
+    };
+    // phase 1: gentle rise to just above the nest, straightening upright
+    this.tweens.add({
+      targets: pp, x: pose.x, y: aboveY, rot: 0, s: pose.s,
+      duration: 700, ease: 'Sine.easeOut', onUpdate: apply,
+      onComplete: () => {
+        this.sleepAt(pose.x + nest.size * this.nestTune.sleepDx, pose.y + nest.size * this.nestTune.sleepDy);
+        // phase 2: settle softly down into the bowl, head tilting to sleep
+        this.tweens.add({
+          targets: pp, y: pose.y, rot: Phaser.Math.DegToRad(this.nestTune.tilt),
+          duration: 650, ease: 'Sine.easeInOut', onUpdate: apply,
+        });
+      },
+    });
+  }
+
+  // dev: replay the landing motion on the first nest without scoring/advancing
+  previewLand() {
+    const nest = this.targets && this.targets[0];
+    if (!nest) { console.warn('no nest to preview'); return; }
+    if (!this.bird) this.spawnBird();
+    this.clearZzz();
+    this.launched = true;       // suppress the slingshot bands during preview
+    this.roundResolved = true;  // and stop the idle bird from being recycled
+    this.bird.setStatic(true);
+    this.bird.setScale(1);
+    this.bird.setRotation(0.4);
+    this.bird.setPosition(nest.cx + 24, nest.cyImg - nest.size * 0.55);
+    this.animateNestLanding(nest);
+  }
+
+  // bird settled into the correct nest — let it fall asleep
+  onCorrectNest(nest) {
+    this.roundResolved = true;
+    this.score += 1;
+    this.wordsCleared += 1;
+    this.birdsLeft -= 1;
+    this.updateHud();
+
+    this.animateNestLanding(nest);
+
+    this.feedbackText.setColor('#cfe3ff');
+    this.feedbackText.setText('Noapte bună 🌙\n' + this.answer.ro + ' = ' + this.answer.en);
+
+    this.time.delayedCall(2200, () => {
+      if (this.wordsCleared >= this.wordsToClear) this.onLevelClear();
+      else if (this.birdsLeft <= 0) this.onGameOver();
+      else this.startRound();
+    });
+  }
+
+  // A little speech bubble above a nest — the bird "saying" something. (When the
+  // bird gets a voice, this is where a spoken line would sync.)
+  speakWrong(nest) {
+    this.clearSpeech();
+    const y = nest.cyImg - nest.size * 0.5;
+    this.speechObj = this.add.text(nest.cx, y, 'Ăsta nu-i cuibul meu!', {
+      fontFamily: 'Georgia, serif', fontSize: '19px', color: '#fff3c4', fontStyle: 'italic',
+      backgroundColor: '#0b1026cc', padding: { x: 10, y: 6 }, align: 'center',
+    }).setOrigin(0.5).setDepth(21).setAlpha(0);
+    this.tweens.add({ targets: this.speechObj, alpha: 1, y: y - 8, duration: 200 });
+  }
+
+  clearSpeech() {
+    if (this.speechObj) { this.speechObj.destroy(); this.speechObj = null; }
+  }
+
+  // The wrong-nest beat: the bird settles in as if home, pauses, then *realizes*
+  // it's the wrong nest — pops up, protests in Romanian, shakes its head "no",
+  // and hops back out.
+  animateWrongNest(nest, onDone) {
+    this.bird.setStatic(true);
+    this.bird.setVelocity(0, 0);
+    this.bird.setAngularVelocity(0);
+    this.bird.setDepth(4); // settles in at first — it thinks it's home
+    const pose = this.nestRestPose(nest);
+    const pp = { x: this.bird.x, y: this.bird.y, rot: this.bird.rotation, s: this.bird.scaleX, a: 1 };
+    const apply = () => {
+      if (!this.bird) return;
+      this.bird.setPosition(pp.x, pp.y);
+      this.bird.setRotation(pp.rot);
+      this.bird.setScale(pp.s);
+      this.bird.setAlpha(pp.a);
+    };
+    // 0: settle into the nest as if it were home
+    this.tweens.add({
+      targets: pp, x: pose.x, y: pose.y, rot: pose.rot, s: pose.s,
+      duration: 300, ease: 'Sine.easeOut', onUpdate: apply,
+      onComplete: () => {
+        // ...a beat... then the realization
+        this.time.delayedCall(650, () => {
+          if (!this.bird) return;
+          this.bird.setDepth(7); // pops above the rim now
+          this.speakWrong(nest);
+          const baseX = pp.x;
+          // 1: startled perk-up
+          this.tweens.add({
+            targets: pp, y: pose.y - 18, rot: 0, duration: 150, ease: 'Quad.easeOut', onUpdate: apply,
+            onComplete: () => {
+              // 2: shake head "no" — side-to-side, upright
+              this.tweens.add({
+                targets: pp, x: { from: baseX - 6, to: baseX + 6 }, duration: 80, ease: 'Sine.easeInOut',
+                yoyo: true, repeat: 3, onUpdate: apply,
+                onComplete: () => {
+                  // a beat to read the line (and later hear it), then glide
+                  // slowly back to the slingshot to try again
+                  this.time.delayedCall(1000, () => {
+                    if (!this.bird) return;
+                    this.clearSpeech();
+                    this.tweens.add({
+                      targets: pp, x: ANCHOR.x, y: ANCHOR.y, rot: 0,
+                      duration: 850, ease: 'Sine.easeInOut', onUpdate: apply,
+                      onComplete: () => onDone && onDone(),
+                    });
+                  });
+                },
+              });
+            },
+          });
+        });
+      },
+    });
+  }
+
+  // dev: replay the wrong-nest reaction on a distractor nest
+  previewWrong() {
+    const nest = (this.targets || []).find((t) => t.word.ro !== this.answer.ro) || (this.targets || [])[0];
+    if (!nest) { console.warn('no nest to preview'); return; }
+    if (!this.bird) this.spawnBird();
+    this.launched = true;
+    this.roundResolved = true; // dev: stop idle-recycle during preview
+    this.bird.setScale(1);
+    this.bird.setAlpha(1);
+    this.bird.setPosition(nest.cx, nest.cyImg - nest.size * 0.4);
+    this.animateWrongNest(nest, () => { this.clearSpeech(); this.feedbackText.setText(''); });
+  }
+
+  // bird dropped into the wrong nest — react, then spend it and retry the word
+  onWrongNest(nest) {
+    if (this.roundResolved || this.wrongResolving) return;
+    this.wrongResolving = true;
+    this.animateWrongNest(nest, () => {
+      this.wrongResolving = false;
+      this.clearSpeech();
+      this.feedbackText.setText('');
+      this.recycleBird(); // costs a bird; respawns to retry, or ends the game
+    });
+  }
+
+  sleepAt(x, y) {
+    this.clearZzz();
+    this.zzz = this.add.text(x, y, '💤', {
+      fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
+      fontSize: '26px',
+    }).setOrigin(0.5).setDepth(7).setAlpha(0);
+    this.tweens.add({ targets: this.zzz, alpha: 1, y: y - 12, duration: 600, yoyo: true, repeat: 2 });
+  }
+
   clearTargets() {
     if (!this.targets) return;
     this.targets.forEach((t) => {
-      t.go.destroy();
-      t.label.destroy();
-      t.boxes.forEach((b) => b.destroy());
+      if (t.label) t.label.destroy();
+      if (t.go) t.go.destroy();
+      if (t.boxes) t.boxes.forEach((b) => b.destroy());
+      if (t.gfx) t.gfx.destroy();
+      if (t.gfxFront) t.gfxFront.destroy();
+      if (t.sensor) this.matter.world.remove(t.sensor);
+      if (t.bodies) t.bodies.forEach((b) => this.matter.world.remove(b));
     });
     this.targets = [];
   }
@@ -298,13 +586,22 @@ export default class GameScene extends Phaser.Scene {
   // ----------------------------------------------------------- collisions ----
   bindCollisions() {
     this.matter.world.on('collisionstart', (event) => {
-      if (this.gameState !== 'playing' || this.roundResolved || !this.launched) return;
+      if (this.gameState !== 'playing' || this.roundResolved || this.wrongResolving || !this.launched || !this.bird) return;
+      const birdBody = this.bird.body;
       for (const pair of event.pairs) {
-        const a = pair.bodyA.gameObject;
-        const b = pair.bodyB.gameObject;
-        const bird = a === this.bird ? a : b === this.bird ? b : null;
-        if (!bird) continue;
-        const other = bird === a ? b : a;
+        let otherBody = null;
+        if (pair.bodyA === birdBody) otherBody = pair.bodyB;
+        else if (pair.bodyB === birdBody) otherBody = pair.bodyA;
+        else continue;
+
+        // nest round: raw sensor body carries its nest + word
+        if (otherBody.isNestSensor) {
+          if (otherBody.word.ro === this.answer.ro) this.onCorrectNest(otherBody.nest);
+          else this.onWrongNest(otherBody.nest);
+          break;
+        }
+        // knock-down round: a target game object
+        const other = otherBody.gameObject;
         if (other && other.isTarget) {
           if (other.word.ro === this.answer.ro) this.onCorrect(other);
           else this.onWrong(other);
@@ -432,14 +729,15 @@ export default class GameScene extends Phaser.Scene {
     }
 
     if (this.targets) {
+      // knock-down targets move (dynamic); nest labels are static
       this.targets.forEach((t) => {
-        if (t.go.active) t.label.setPosition(t.go.x, t.go.y);
+        if (t.go && t.go.active) t.label.setPosition(t.go.x, t.go.y);
       });
     }
 
     this.drawBands();
 
-    if (this.gameState === 'playing' && this.launched && !this.roundResolved) this.checkBirdSpent();
+    if (this.gameState === 'playing' && this.launched && !this.roundResolved && !this.wrongResolving) this.checkBirdSpent();
   }
 
   drawBands() {

@@ -11,6 +11,7 @@ export default class BootScene extends Phaser.Scene {
     // it matches the 🐦 used for the lives counter. "Sleepy" is conveyed by the
     // bobbing 💤 floating above it (see GameScene), which vanishes on launch.
     this.makeEmojiBird('bird', '🐦');
+    this.makeEmojiTexture('nest', '🪹', 160);
     this.makeBoxTexture('box', 60, 60, 0xc9954f, 0x8a5a2b);
     this.makeBoxTexture('plank', 120, 26, 0xb07d3b, 0x7c5526);
     this.makeRoundTexture('target', 88, 88, 0x6ad0ff, 0x1f6f9c);
@@ -32,6 +33,21 @@ export default class BootScene extends Phaser.Scene {
     ctx.font = '58px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
     ctx.translate(S, 0);
     ctx.scale(-1, 1); // mirror so the bird faces right
+    ctx.fillText(emoji, S / 2, S / 2);
+    if (this.textures.exists(key)) this.textures.remove(key);
+    this.textures.addCanvas(key, canvas);
+  }
+
+  // Renders an emoji (unmirrored) to a square texture for use as a sprite.
+  makeEmojiTexture(key, emoji, size) {
+    const S = size;
+    const canvas = document.createElement('canvas');
+    canvas.width = S;
+    canvas.height = S;
+    const ctx = canvas.getContext('2d');
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = Math.floor(S * 0.82) + 'px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
     ctx.fillText(emoji, S / 2, S / 2);
     if (this.textures.exists(key)) this.textures.remove(key);
     this.textures.addCanvas(key, canvas);
