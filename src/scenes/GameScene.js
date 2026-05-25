@@ -972,13 +972,17 @@ export default class GameScene extends Phaser.Scene {
     if (this.dragging) {
       let px = this.bird.x;
       let py = this.bird.y;
-      let svx = (this.perch.x - this.bird.x) * LAUNCH_POWER;
-      let svy = (this.perch.y - this.bird.y) * LAUNCH_POWER;
+      // Trace the bird's ACTUAL flight: Matter's velocity moves the body ~0.5 px
+      // per frame of displacement, with ~0.11 px/frame^2 effective gravity. (The
+      // old preview treated velocity as displacement and overshot ~2x.)
+      const DISP = 0.5;
+      let svx = (this.perch.x - this.bird.x) * LAUNCH_POWER * DISP;
+      let svy = (this.perch.y - this.bird.y) * LAUNCH_POWER * DISP;
       this.aimGfx.fillStyle(0xffffff, 0.5);
-      for (let i = 0; i < 24; i += 1) {
+      for (let i = 0; i < 48; i += 1) {
         px += svx;
         py += svy;
-        svy += 0.23; // gravity per step, matched to the real Matter physics
+        svy += 0.11;
         if (i % 2 === 0) this.aimGfx.fillCircle(px, py, 3);
         if (py > GROUND_Y) break;
       }
