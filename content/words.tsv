@@ -1,0 +1,225 @@
+topic	ro	en	emoji	count	manual
+animale	câine	dog	🐶	1	
+animale	pisică	cat	🐱	1	
+animale	cal	horse	🐴	1	
+animale	vacă	cow	🐮	1	
+animale	porc	pig	🐷	1	
+animale	oaie	sheep	🐑	1	
+animale	capră	goat	🐐	1	
+animale	iepure	rabbit	🐰	1	
+animale	rață	duck	🦆	1	
+animale	pui	chick	🐥	1	
+animale	pește	fish	🐟	1	
+animale	pasăre	bird	🐦	1	
+salbatice	urs	bear	🐻	1	
+salbatice	lup	wolf	🐺	1	
+salbatice	vulpe	fox	🦊	1	
+salbatice	leu	lion	🦁	1	
+salbatice	elefant	elephant	🐘	1	
+salbatice	girafă	giraffe	🦒	1	
+salbatice	cămilă	camel	🐫	1	
+salbatice	șarpe	snake	🐍	1	
+salbatice	melc	snail	🐌	1	
+salbatice	fluture	butterfly	🦋	1	
+salbatice	albină	bee	🐝	1	
+salbatice	lebădă	swan	🦢	1	
+fructe	măr	apple	🍎	1	
+fructe	pară	pear	🍐	1	
+fructe	lămâie	lemon	🍋	1	
+fructe	portocală	orange	🍊	1	
+fructe	cireașă	cherry	🍒	1	
+fructe	căpșună	strawberry	🍓	1	
+fructe	piersică	peach	🍑	1	
+fructe	strugure	bunch of grapes	🍇	1	
+fructe	pepene	watermelon	🍉	1	
+fructe	banană	banana	🍌	1	f|banane|banana|bananele
+legume	roșie	tomato	🍅	1	
+legume	cartof	potato	🥔	1	
+legume	morcov	carrot	🥕	1	
+legume	ceapă	onion	🧅	1	
+legume	usturoi	garlic	🧄	0	
+legume	castravete	cucumber	🥒	1	
+legume	porumb	corn	🌽	0	m|porumbi|porumbul|porumbii
+legume	ciupercă	mushroom	🍄	1	
+legume	ardei	pepper	🌶️	1	
+legume	vânătă	eggplant	🍆	1	
+legume	dovleac	pumpkin	🎃	1	
+legume	varză	cabbage	🥬	1	
+mancare	pâine	bread	🍞	1	
+mancare	brânză	cheese	🧀	0	
+mancare	ou	egg	🥚	1	
+mancare	carne	meat	🥩	0	
+mancare	supă	soup	🍲	1	
+mancare	salată	salad	🥗	1	
+mancare	orez	rice	🍚	0	
+mancare	unt	butter	🧈	0	
+mancare	sare	salt	🧂	0	
+mancare	pizza	pizza	🍕	1	f|pizze|pizza|pizzele
+dulciuri	tort	cake	🎂	1	
+dulciuri	înghețată	ice cream	🍦	1	
+dulciuri	ciocolată	chocolate	🍫	1	
+dulciuri	gogoașă	doughnut	🍩	1	
+dulciuri	clătită	pancake	🥞	1	
+dulciuri	plăcintă	pie	🥧	1	
+dulciuri	bomboană	candy	🍬	1	
+dulciuri	prăjitură	cookie	🍪	1	
+dulciuri	covrig	pretzel	🥨	1	
+dulciuri	miere	honey	🍯	0	f|mieri|mierea|mierile
+masa	apă	water	💧	0	
+masa	lapte	milk	🥛	0	
+masa	cafea	coffee	☕	1	
+masa	ceai	tea	🍵	1	
+masa	suc	juice	🧃	1	
+masa	vin	wine	🍷	1	
+masa	bere	beer	🍺	1	
+masa	sticlă	bottle	🍾	1	
+masa	pahar	glass	🥃	1	
+masa	farfurie	plate	🍽️	1	
+masa	lingură	spoon	🥄	1	
+masa	cuțit	knife	🔪	1	
+cer	soare	sun	☀️	0	
+cer	lună	moon	🌙	1	
+cer	stea	star	⭐	1	
+cer	nor	cloud	☁️	1	
+cer	ploaie	rain	🌧️	1	
+cer	zăpadă	snow	❄️	0	
+cer	vânt	wind	💨	1	
+cer	furtună	storm	⛈️	1	
+cer	foc	fire	🔥	1	
+cer	gheață	ice	🧊	0	
+cer	curcubeu	rainbow	🌈	1	n|curcubeie|curcubeul|curcubeiele
+cer	fulger	lightning	⚡	1	n|fulgere|fulgerul|fulgerele
+natura	munte	mountain	⛰️	1	
+natura	mare	sea	🌊	1	
+natura	insulă	island	🏝️	1	
+natura	plajă	beach	🏖️	1	
+natura	copac	tree	🌳	1	
+natura	brad	fir tree	🌲	1	
+natura	floare	flower	🌸	1	
+natura	trandafir	rose	🌹	1	
+natura	frunză	leaf	🍁	1	
+natura	piatră	stone	🪨	1	
+acasa	casă	house	🏠	1	
+acasa	ușă	door	🚪	1	
+acasa	fereastră	window	🪟	1	
+acasa	pat	bed	🛏️	1	
+acasa	scaun	chair	🪑	1	
+acasa	canapea	sofa	🛋️	1	
+acasa	cheie	key	🔑	1	
+acasa	ceas	clock	⏰	1	
+acasa	bec	lightbulb	💡	1	
+acasa	televizor	television	📺	1	
+acasa	telefon	phone	📱	1	
+acasa	oglindă	mirror	🪞	1	
+lucruri	duș	shower	🚿	1	
+lucruri	cadă	bathtub	🛁	1	
+lucruri	toaletă	toilet	🚽	1	
+lucruri	săpun	soap	🧼	1	
+lucruri	burete	sponge	🧽	1	
+lucruri	cutie	box	📦	1	
+lucruri	coș	basket	🧺	1	
+lucruri	foarfecă	scissors	✂️	1	
+lucruri	lanternă	flashlight	🔦	1	
+lucruri	baterie	battery	🔋	1	
+lucruri	umbrelă	umbrella	☂️	1	f|umbrele|umbrela|umbrelele
+lucruri	lumânare	candle	🕯️	1	f|lumânări|lumânarea|lumânările
+haine	cămașă	shirt	👔	1	
+haine	tricou	T-shirt	👕	1	
+haine	rochie	dress	👗	1	
+haine	pantalon	pants	👖	1	
+haine	pantof	shoe	👞	1	
+haine	cizmă	boot	👢	1	
+haine	șosetă	sock	🧦	1	
+haine	mănușă	glove	🧤	1	
+haine	pălărie	hat	👒	1	
+haine	șapcă	cap	🧢	1	
+haine	fular	scarf	🧣	1	
+haine	haină	coat	🧥	1	
+corp	ochi	eye	👁️	1	
+corp	nas	nose	👃	1	
+corp	gură	mouth	👄	1	
+corp	ureche	ear	👂	1	
+corp	mână	hand	✋	1	
+corp	picior	leg	🦵	1	
+corp	dinte	tooth	🦷	1	
+corp	inimă	heart	❤️	1	
+corp	os	bone	🦴	1	
+corp	braț	arm	💪	1	
+corp	deget	finger	☝️	1	
+corp	limbă	tongue	👅	1	
+oameni	bărbat	man	👨	1	
+oameni	femeie	woman	👩	1	
+oameni	băiat	boy	👦	1	
+oameni	fată	girl	👧	1	
+oameni	copil	child	🧒	1	
+oameni	bunic	grandfather	👴	1	
+oameni	bunică	grandmother	👵	1	
+oameni	rege	king	🤴	1	
+oameni	regină	queen	👸	1	
+oameni	mire	groom	🤵	1	
+oameni	mireasă	bride	👰	1	
+oameni	familie	family	👪	1	
+meserii	polițist	police officer	👮	1	
+meserii	medic	doctor	👨‍⚕️	1	
+meserii	bucătar	cook	👨‍🍳	1	
+meserii	profesor	teacher	👨‍🏫	1	
+meserii	student	student	👨‍🎓	1	
+meserii	pictor	painter	👨‍🎨	1	
+meserii	cântăreț	singer	👨‍🎤	1	
+meserii	țăran	farmer	👨‍🌾	1	
+transport	mașină	car	🚗	1	
+transport	tren	train	🚆	1	
+transport	avion	airplane	✈️	1	
+transport	autobuz	bus	🚌	1	
+transport	taxi	taxi	🚕	1	
+transport	barcă	boat	⛵	1	
+transport	vapor	ship	🚢	1	
+transport	bicicletă	bicycle	🚲	1	f|biciclete|bicicleta|bicicletele
+transport	rachetă	rocket	🚀	1	f|rachete|racheta|rachetele
+transport	elicopter	helicopter	🚁	1	n|elicoptere|elicopterul|elicopterele
+transport	camion	truck	🚚	1	n|camioane|camionul|camioanele
+transport	sanie	sled	🛷	1	
+oras	oraș	city	🏙️	1	
+oras	școală	school	🏫	1	
+oras	spital	hospital	🏥	1	
+oras	biserică	church	⛪	1	
+oras	bancă	bank	🏦	1	
+oras	magazin	store	🏪	1	
+oras	muzeu	museum	🏛️	1	
+oras	fabrică	factory	🏭	1	
+oras	poștă	post office	🏤	1	
+oras	bloc	apartment building	🏢	1	
+oras	hotel	hotel	🏨	1	n|hoteluri|hotelul|hotelurile
+oras	castel	castle	🏰	1	n|castele|castelul|castelele
+calatorie	drum	road	🛣️	1	
+calatorie	pod	bridge	🌉	1	
+calatorie	gară	train station	🚉	1	
+calatorie	bilet	ticket	🎫	1	
+calatorie	hartă	map	🗺️	1	
+calatorie	bagaj	luggage	🧳	1	
+calatorie	cort	tent	⛺	1	
+calatorie	statuie	statue	🗽	1	
+scoala	carte	book	📖	1	
+scoala	caiet	notebook	📓	1	
+scoala	creion	pencil	✏️	1	
+scoala	pix	pen	🖊️	1	
+scoala	stilou	fountain pen	🖋️	1	
+scoala	riglă	ruler	📏	1	
+scoala	ghiozdan	schoolbag	🎒	1	
+scoala	hârtie	paper	📄	1	
+scoala	scrisoare	letter	✉️	1	
+scoala	ziar	newspaper	📰	1	
+scoala	pensulă	paintbrush	🖌️	1	
+scoala	agrafă	paper clip	📎	1	
+timpliber	minge	ball	⚽	1	
+timpliber	jucărie	toy	🧸	1	
+timpliber	cântec	song	🎵	1	
+timpliber	premiu	prize	🏆	1	
+timpliber	șah	chess	♟️	0	
+timpliber	tablou	painting	🖼️	1	
+timpliber	cadou	gift	🎁	1	
+timpliber	bani	money	💰	p	m|bani|banii|banii
+timpliber	petrecere	party	🎉	1	
+timpliber	joc	game	🎮	1	
+timpliber	card	card	💳	1	
+timpliber	inel	ring	💍	1	

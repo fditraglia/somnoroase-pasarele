@@ -2,27 +2,54 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#2f2569" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Sleepy Birds" />
+    <meta name="description" content="Sleepy Birds: a slingshot game that teaches Romanian vocabulary and grammar at bedtime." />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" type="image/png" href="./icon-192.png" />
+    <link rel="apple-touch-icon" href="./icon-180.png" />
     <title>Somnoroase Păsărele — Sleepy Birds</title>
     <style>
       :root { color-scheme: dark; }
       html, body {
         margin: 0;
         height: 100%;
-        background: #0b1026;
+        overflow: hidden;
+        overscroll-behavior: none;
+        /* The letterbox bars continue the scene: dusk sky above, meadow below. */
+        background: linear-gradient(#2f2569 0%, #5a3a8a 46%, #8a4a86 70%, #5c7a3c 82%, #4f6d35 100%);
         font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+        -webkit-tap-highlight-color: transparent;
       }
-      #app {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100%;
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; touch-action: none; }
+      #rotate {
+        display: none;
+        position: fixed;
+        left: 0; right: 0; bottom: 0;
+        padding: 14px 18px calc(14px + env(safe-area-inset-bottom));
+        text-align: center;
+        color: #fff3c4;
+        font-size: 16px;
+        line-height: 1.35;
+        background: rgba(20, 14, 52, 0.82);
       }
-      canvas { display: block; border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+      #rotate b { font-size: 22px; display: block; margin-bottom: 2px; }
+      @media (orientation: portrait) and (max-width: 700px) {
+        #rotate { display: block; }
+      }
     </style>
   </head>
   <body>
     <div id="app"></div>
+    <div id="rotate"><b>↻</b>Turn your phone sideways for a bigger view.</div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

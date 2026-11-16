@@ -1,7 +1,7 @@
 {
   "name": "somnoroase-pasarele",
   "version": "0.0.1",
-  "description": "Sleepy Birds — an Angry Birds-style physics game that teaches a little Romanian",
+  "description": "Sleepy Birds — a slingshot game that teaches Romanian vocabulary and grammar",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource-variable/baloo-2": "^5.3.0",
+    "@fontsource-variable/nunito": "^5.3.0",
     "phaser": "^3.88.2"
   },
   "devDependencies": {

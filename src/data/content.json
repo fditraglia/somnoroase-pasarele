@@ -1,0 +1,4261 @@
+{
+ "topics": [
+  {
+   "id": "animale",
+   "ro": "Animale",
+   "en": "Animals",
+   "icon": "🐶",
+   "words": [
+    "câine",
+    "pisică",
+    "cal",
+    "vacă",
+    "porc",
+    "oaie",
+    "capră",
+    "iepure",
+    "rață",
+    "pui",
+    "pește",
+    "pasăre"
+   ]
+  },
+  {
+   "id": "salbatice",
+   "ro": "Animale sălbatice",
+   "en": "Wild animals",
+   "icon": "🦁",
+   "words": [
+    "urs",
+    "lup",
+    "vulpe",
+    "leu",
+    "elefant",
+    "girafă",
+    "cămilă",
+    "șarpe",
+    "melc",
+    "fluture",
+    "albină",
+    "lebădă"
+   ]
+  },
+  {
+   "id": "fructe",
+   "ro": "Fructe",
+   "en": "Fruit",
+   "icon": "🍎",
+   "words": [
+    "măr",
+    "pară",
+    "lămâie",
+    "portocală",
+    "cireașă",
+    "căpșună",
+    "piersică",
+    "strugure",
+    "pepene",
+    "banană"
+   ]
+  },
+  {
+   "id": "legume",
+   "ro": "Legume",
+   "en": "Vegetables",
+   "icon": "🥕",
+   "words": [
+    "roșie",
+    "cartof",
+    "morcov",
+    "ceapă",
+    "usturoi",
+    "castravete",
+    "porumb",
+    "ciupercă",
+    "ardei",
+    "vânătă",
+    "dovleac",
+    "varză"
+   ]
+  },
+  {
+   "id": "mancare",
+   "ro": "Mâncare",
+   "en": "Food",
+   "icon": "🍞",
+   "words": [
+    "pâine",
+    "brânză",
+    "ou",
+    "carne",
+    "supă",
+    "salată",
+    "orez",
+    "unt",
+    "sare",
+    "pizza"
+   ]
+  },
+  {
+   "id": "dulciuri",
+   "ro": "Dulciuri",
+   "en": "Sweets",
+   "icon": "🍰",
+   "words": [
+    "tort",
+    "înghețată",
+    "ciocolată",
+    "gogoașă",
+    "clătită",
+    "plăcintă",
+    "bomboană",
+    "prăjitură",
+    "covrig",
+    "miere"
+   ]
+  },
+  {
+   "id": "masa",
+   "ro": "La masă",
+   "en": "At the table",
+   "icon": "☕",
+   "words": [
+    "apă",
+    "lapte",
+    "cafea",
+    "ceai",
+    "suc",
+    "vin",
+    "bere",
+    "sticlă",
+    "pahar",
+    "farfurie",
+    "lingură",
+    "cuțit"
+   ]
+  },
+  {
+   "id": "cer",
+   "ro": "Cer și vreme",
+   "en": "Sky and weather",
+   "icon": "🌙",
+   "words": [
+    "soare",
+    "lună",
+    "stea",
+    "nor",
+    "ploaie",
+    "zăpadă",
+    "vânt",
+    "furtună",
+    "foc",
+    "gheață",
+    "curcubeu",
+    "fulger"
+   ]
+  },
+  {
+   "id": "natura",
+   "ro": "Natură",
+   "en": "Nature",
+   "icon": "🌳",
+   "words": [
+    "munte",
+    "mare",
+    "insulă",
+    "plajă",
+    "copac",
+    "brad",
+    "floare",
+    "trandafir",
+    "frunză",
+    "piatră"
+   ]
+  },
+  {
+   "id": "acasa",
+   "ro": "Acasă",
+   "en": "At home",
+   "icon": "🏠",
+   "words": [
+    "casă",
+    "ușă",
+    "fereastră",
+    "pat",
+    "scaun",
+    "canapea",
+    "cheie",
+    "ceas",
+    "bec",
+    "televizor",
+    "telefon",
+    "oglindă"
+   ]
+  },
+  {
+   "id": "lucruri",
+   "ro": "Prin casă",
+   "en": "Around the house",
+   "icon": "🧼",
+   "words": [
+    "duș",
+    "cadă",
+    "toaletă",
+    "săpun",
+    "burete",
+    "cutie",
+    "coș",
+    "foarfecă",
+    "lanternă",
+    "baterie",
+    "umbrelă",
+    "lumânare"
+   ]
+  },
+  {
+   "id": "haine",
+   "ro": "Haine",
+   "en": "Clothes",
+   "icon": "👕",
+   "words": [
+    "cămașă",
+    "tricou",
+    "rochie",
+    "pantalon",
+    "pantof",
+    "cizmă",
+    "șosetă",
+    "mănușă",
+    "pălărie",
+    "șapcă",
+    "fular",
+    "haină"
+   ]
+  },
+  {
+   "id": "corp",
+   "ro": "Corpul",
+   "en": "The body",
+   "icon": "👁️",
+   "words": [
+    "ochi",
+    "nas",
+    "gură",
+    "ureche",
+    "mână",
+    "picior",
+    "dinte",
+    "inimă",
+    "os",
+    "braț",
+    "deget",
+    "limbă"
+   ]
+  },
+  {
+   "id": "oameni",
+   "ro": "Oameni",
+   "en": "People",
+   "icon": "👪",
+   "words": [
+    "bărbat",
+    "femeie",
+    "băiat",
+    "fată",
+    "copil",
+    "bunic",
+    "bunică",
+    "rege",
+    "regină",
+    "mire",
+    "mireasă",
+    "familie"
+   ]
+  },
+  {
+   "id": "meserii",
+   "ro": "Meserii",
+   "en": "Jobs",
+   "icon": "👮",
+   "words": [
+    "polițist",
+    "medic",
+    "bucătar",
+    "profesor",
+    "student",
+    "pictor",
+    "cântăreț",
+    "țăran"
+   ]
+  },
+  {
+   "id": "transport",
+   "ro": "Transport",
+   "en": "Getting around",
+   "icon": "🚗",
+   "words": [
+    "mașină",
+    "tren",
+    "avion",
+    "autobuz",
+    "taxi",
+    "barcă",
+    "vapor",
+    "bicicletă",
+    "rachetă",
+    "elicopter",
+    "camion",
+    "sanie"
+   ]
+  },
+  {
+   "id": "oras",
+   "ro": "În oraș",
+   "en": "In town",
+   "icon": "🏙️",
+   "words": [
+    "oraș",
+    "școală",
+    "spital",
+    "biserică",
+    "bancă",
+    "magazin",
+    "muzeu",
+    "fabrică",
+    "poștă",
+    "bloc",
+    "hotel",
+    "castel"
+   ]
+  },
+  {
+   "id": "calatorie",
+   "ro": "Călătorie",
+   "en": "Travel",
+   "icon": "🧳",
+   "words": [
+    "drum",
+    "pod",
+    "gară",
+    "bilet",
+    "hartă",
+    "bagaj",
+    "cort",
+    "statuie"
+   ]
+  },
+  {
+   "id": "scoala",
+   "ro": "La școală",
+   "en": "At school",
+   "icon": "✏️",
+   "words": [
+    "carte",
+    "caiet",
+    "creion",
+    "pix",
+    "stilou",
+    "riglă",
+    "ghiozdan",
+    "hârtie",
+    "scrisoare",
+    "ziar",
+    "pensulă",
+    "agrafă"
+   ]
+  },
+  {
+   "id": "timpliber",
+   "ro": "Timp liber",
+   "en": "Free time",
+   "icon": "🎁",
+   "words": [
+    "minge",
+    "jucărie",
+    "cântec",
+    "premiu",
+    "șah",
+    "tablou",
+    "cadou",
+    "bani",
+    "petrecere",
+    "joc",
+    "card",
+    "inel"
+   ]
+  }
+ ],
+ "words": {
+  "câine": {
+   "ro": "câine",
+   "en": "dog",
+   "emoji": "🐶",
+   "g": "m",
+   "pl": "câini",
+   "def": "câinele",
+   "defPl": "câinii",
+   "count": true,
+   "entry": "un câine, doi câini",
+   "ask": "Unde este câinele?",
+   "a": {
+    "w": "2766364bc3e20d45",
+    "e": "9a20a0e52eaffda0",
+    "q": "93094189090ce751"
+   }
+  },
+  "pisică": {
+   "ro": "pisică",
+   "en": "cat",
+   "emoji": "🐱",
+   "g": "f",
+   "pl": "pisici",
+   "def": "pisica",
+   "defPl": "pisicile",
+   "count": true,
+   "entry": "o pisică, două pisici",
+   "ask": "Unde este pisica?",
+   "a": {
+    "w": "d0bf31a93547df48",
+    "e": "0d0ddcfae8eb31c9",
+    "q": "72a9abf926ee53c1"
+   }
+  },
+  "cal": {
+   "ro": "cal",
+   "en": "horse",
+   "emoji": "🐴",
+   "g": "m",
+   "pl": "cai",
+   "def": "calul",
+   "defPl": "caii",
+   "count": true,
+   "entry": "un cal, doi cai",
+   "ask": "Unde este calul?",
+   "a": {
+    "w": "11b04fd085cd2295",
+    "e": "2511c5596de80a26",
+    "q": "d5ebd9223ab27464"
+   }
+  },
+  "vacă": {
+   "ro": "vacă",
+   "en": "cow",
+   "emoji": "🐮",
+   "g": "f",
+   "pl": "vaci",
+   "def": "vaca",
+   "defPl": "vacile",
+   "count": true,
+   "entry": "o vacă, două vaci",
+   "ask": "Unde este vaca?",
+   "a": {
+    "w": "92e8176c6ba92ba2",
+    "e": "e3cb42d54789ed6d",
+    "q": "d43a564ea3a1102e"
+   }
+  },
+  "porc": {
+   "ro": "porc",
+   "en": "pig",
+   "emoji": "🐷",
+   "g": "m",
+   "pl": "porci",
+   "def": "porcul",
+   "defPl": "porcii",
+   "count": true,
+   "entry": "un porc, doi porci",
+   "ask": "Unde este porcul?",
+   "a": {
+    "w": "23340a012c84c7db",
+    "e": "32d496c9246dc03c",
+    "q": "03acbb3ba46b0795"
+   }
+  },
+  "oaie": {
+   "ro": "oaie",
+   "en": "sheep",
+   "emoji": "🐑",
+   "g": "f",
+   "pl": "oi",
+   "def": "oaia",
+   "defPl": "oile",
+   "count": true,
+   "entry": "o oaie, două oi",
+   "ask": "Unde este oaia?",
+   "a": {
+    "w": "a30028a5254fa9f0",
+    "e": "a44a59a7b62755ab",
+    "q": "f3b3d7ef3dd4d76f"
+   }
+  },
+  "capră": {
+   "ro": "capră",
+   "en": "goat",
+   "emoji": "🐐",
+   "g": "f",
+   "pl": "capre",
+   "def": "capra",
+   "defPl": "caprele",
+   "count": true,
+   "entry": "o capră, două capre",
+   "ask": "Unde este capra?",
+   "a": {
+    "w": "ffc6a2ed32c1cabc",
+    "e": "22af91424dfc3c1a",
+    "q": "1d1f47f547e2fa67"
+   }
+  },
+  "iepure": {
+   "ro": "iepure",
+   "en": "rabbit",
+   "emoji": "🐰",
+   "g": "m",
+   "pl": "iepuri",
+   "def": "iepurele",
+   "defPl": "iepurii",
+   "count": true,
+   "entry": "un iepure, doi iepuri",
+   "ask": "Unde este iepurele?",
+   "a": {
+    "w": "614892ff30487b9c",
+    "e": "5f9a2a53a8aaac07",
+    "q": "b6cdb36c37280062"
+   }
+  },
+  "rață": {
+   "ro": "rață",
+   "en": "duck",
+   "emoji": "🦆",
+   "g": "f",
+   "pl": "rațe",
+   "def": "rața",
+   "defPl": "rațele",
+   "count": true,
+   "entry": "o rață, două rațe",
+   "ask": "Unde este rața?",
+   "a": {
+    "w": "c9ecc8444f66a482",
+    "e": "61371d5d8ce4d62a",
+    "q": "10f855fed745c764"
+   }
+  },
+  "pui": {
+   "ro": "pui",
+   "en": "chick",
+   "emoji": "🐥",
+   "g": "m",
+   "pl": "pui",
+   "def": "puiul",
+   "defPl": "puii",
+   "count": true,
+   "entry": "un pui, doi pui",
+   "ask": "Unde este puiul?",
+   "a": {
+    "w": "9ee9869683ec5015",
+    "e": "d825c9cc76eb31fc",
+    "q": "7080e2af22111271"
+   }
+  },
+  "pește": {
+   "ro": "pește",
+   "en": "fish",
+   "emoji": "🐟",
+   "g": "m",
+   "pl": "pești",
+   "def": "peștele",
+   "defPl": "peștii",
+   "count": true,
+   "entry": "un pește, doi pești",
+   "ask": "Unde este peștele?",
+   "a": {
+    "w": "52a72a906474635f",
+    "e": "6a04f6e7a7461a05",
+    "q": "23a7e41ca67c4252"
+   }
+  },
+  "pasăre": {
+   "ro": "pasăre",
+   "en": "bird",
+   "emoji": "🐦",
+   "g": "f",
+   "pl": "păsări",
+   "def": "pasărea",
+   "defPl": "păsările",
+   "count": true,
+   "entry": "o pasăre, două păsări",
+   "ask": "Unde este pasărea?",
+   "a": {
+    "w": "d0b16365b64afed9",
+    "e": "2bfeabccbd165b9c",
+    "q": "ffe6db905c978444"
+   }
+  },
+  "urs": {
+   "ro": "urs",
+   "en": "bear",
+   "emoji": "🐻",
+   "g": "m",
+   "pl": "urși",
+   "def": "ursul",
+   "defPl": "urșii",
+   "count": true,
+   "entry": "un urs, doi urși",
+   "ask": "Unde este ursul?",
+   "a": {
+    "w": "288d7bcd44830b89",
+    "e": "bf4a93ea848a6c5e",
+    "q": "672aecd98a910320"
+   }
+  },
+  "lup": {
+   "ro": "lup",
+   "en": "wolf",
+   "emoji": "🐺",
+   "g": "m",
+   "pl": "lupi",
+   "def": "lupul",
+   "defPl": "lupii",
+   "count": true,
+   "entry": "un lup, doi lupi",
+   "ask": "Unde este lupul?",
+   "a": {
+    "w": "a6d94554224331d7",
+    "e": "8a3823727fb7ff9d",
+    "q": "c287bc809776db41"
+   }
+  },
+  "vulpe": {
+   "ro": "vulpe",
+   "en": "fox",
+   "emoji": "🦊",
+   "g": "f",
+   "pl": "vulpi",
+   "def": "vulpea",
+   "defPl": "vulpile",
+   "count": true,
+   "entry": "o vulpe, două vulpi",
+   "ask": "Unde este vulpea?",
+   "a": {
+    "w": "2cf0292c4d82cd79",
+    "e": "271778b188e97b52",
+    "q": "5ef4ecbefdcc51eb"
+   }
+  },
+  "leu": {
+   "ro": "leu",
+   "en": "lion",
+   "emoji": "🦁",
+   "g": "m",
+   "pl": "lei",
+   "def": "leul",
+   "defPl": "leii",
+   "count": true,
+   "entry": "un leu, doi lei",
+   "ask": "Unde este leul?",
+   "a": {
+    "w": "d98db905cdcb75d9",
+    "e": "ba15eebab3390e24",
+    "q": "d3929197c02e8c4c"
+   }
+  },
+  "elefant": {
+   "ro": "elefant",
+   "en": "elephant",
+   "emoji": "🐘",
+   "g": "m",
+   "pl": "elefanți",
+   "def": "elefantul",
+   "defPl": "elefanții",
+   "count": true,
+   "entry": "un elefant, doi elefanți",
+   "ask": "Unde este elefantul?",
+   "a": {
+    "w": "741e1e672b049b06",
+    "e": "696903d13e1340de",
+    "q": "190676d4d62b5b8e"
+   }
+  },
+  "girafă": {
+   "ro": "girafă",
+   "en": "giraffe",
+   "emoji": "🦒",
+   "g": "f",
+   "pl": "girafe",
+   "def": "girafa",
+   "defPl": "girafele",
+   "count": true,
+   "entry": "o girafă, două girafe",
+   "ask": "Unde este girafa?",
+   "a": {
+    "w": "6bedaaf3ddd4887d",
+    "e": "0a4d2f9297fee9d8",
+    "q": "c9faeaf6c2b93d53"
+   }
+  },
+  "cămilă": {
+   "ro": "cămilă",
+   "en": "camel",
+   "emoji": "🐫",
+   "g": "f",
+   "pl": "cămile",
+   "def": "cămila",
+   "defPl": "cămilele",
+   "count": true,
+   "entry": "o cămilă, două cămile",
+   "ask": "Unde este cămila?",
+   "a": {
+    "w": "f68ad9cdd15f1b7a",
+    "e": "7193b080d8674a31",
+    "q": "40126d664d277cea"
+   }
+  },
+  "șarpe": {
+   "ro": "șarpe",
+   "en": "snake",
+   "emoji": "🐍",
+   "g": "m",
+   "pl": "șerpi",
+   "def": "șarpele",
+   "defPl": "șerpii",
+   "count": true,
+   "entry": "un șarpe, doi șerpi",
+   "ask": "Unde este șarpele?",
+   "a": {
+    "w": "54d32a22d9b46f17",
+    "e": "ce75f41c24a111ea",
+    "q": "5d344bb04b49e82a"
+   }
+  },
+  "melc": {
+   "ro": "melc",
+   "en": "snail",
+   "emoji": "🐌",
+   "g": "m",
+   "pl": "melci",
+   "def": "melcul",
+   "defPl": "melcii",
+   "count": true,
+   "entry": "un melc, doi melci",
+   "ask": "Unde este melcul?",
+   "a": {
+    "w": "281914edca661b86",
+    "e": "baed7ab7375ad27b",
+    "q": "438e12c29eee1709"
+   }
+  },
+  "fluture": {
+   "ro": "fluture",
+   "en": "butterfly",
+   "emoji": "🦋",
+   "g": "m",
+   "pl": "fluturi",
+   "def": "fluturele",
+   "defPl": "fluturii",
+   "count": true,
+   "entry": "un fluture, doi fluturi",
+   "ask": "Unde este fluturele?",
+   "a": {
+    "w": "610e55315e072a56",
+    "e": "736c89875d1a3162",
+    "q": "ba580643e7c618e2"
+   }
+  },
+  "albină": {
+   "ro": "albină",
+   "en": "bee",
+   "emoji": "🐝",
+   "g": "f",
+   "pl": "albine",
+   "def": "albina",
+   "defPl": "albinele",
+   "count": true,
+   "entry": "o albină, două albine",
+   "ask": "Unde este albina?",
+   "a": {
+    "w": "eed253ab77a44fe3",
+    "e": "a15b1bb19f4b2d19",
+    "q": "477259987da022e1"
+   }
+  },
+  "lebădă": {
+   "ro": "lebădă",
+   "en": "swan",
+   "emoji": "🦢",
+   "g": "f",
+   "pl": "lebede",
+   "def": "lebăda",
+   "defPl": "lebedele",
+   "count": true,
+   "entry": "o lebădă, două lebede",
+   "ask": "Unde este lebăda?",
+   "a": {
+    "w": "017cbba3b2ca856b",
+    "e": "80c9889fae54b70a",
+    "q": "6e3d33fdc0cc75b5"
+   }
+  },
+  "măr": {
+   "ro": "măr",
+   "en": "apple",
+   "emoji": "🍎",
+   "g": "n",
+   "pl": "mere",
+   "def": "mărul",
+   "defPl": "merele",
+   "count": true,
+   "entry": "un măr, două mere",
+   "ask": "Unde este mărul?",
+   "a": {
+    "w": "4b5942b329789b02",
+    "e": "4429f4cd740e8394",
+    "q": "323c403d0917e630"
+   }
+  },
+  "pară": {
+   "ro": "pară",
+   "en": "pear",
+   "emoji": "🍐",
+   "g": "f",
+   "pl": "pere",
+   "def": "para",
+   "defPl": "perele",
+   "count": true,
+   "entry": "o pară, două pere",
+   "ask": "Unde este para?",
+   "a": {
+    "w": "d9b2ba39a313091c",
+    "e": "a4dcd9dfd751c695",
+    "q": "f76efdb21b2b2c38"
+   }
+  },
+  "lămâie": {
+   "ro": "lămâie",
+   "en": "lemon",
+   "emoji": "🍋",
+   "g": "f",
+   "pl": "lămâi",
+   "def": "lămâia",
+   "defPl": "lămâile",
+   "count": true,
+   "entry": "o lămâie, două lămâi",
+   "ask": "Unde este lămâia?",
+   "a": {
+    "w": "6efca5a455c73d3e",
+    "e": "0f2808390afa9506",
+    "q": "97f9869a42457110"
+   }
+  },
+  "portocală": {
+   "ro": "portocală",
+   "en": "orange",
+   "emoji": "🍊",
+   "g": "f",
+   "pl": "portocale",
+   "def": "portocala",
+   "defPl": "portocalele",
+   "count": true,
+   "entry": "o portocală, două portocale",
+   "ask": "Unde este portocala?",
+   "a": {
+    "w": "b59ac24cba2e3906",
+    "e": "cffae9d2b969aaff",
+    "q": "9b1588f5b0584185"
+   }
+  },
+  "cireașă": {
+   "ro": "cireașă",
+   "en": "cherry",
+   "emoji": "🍒",
+   "g": "f",
+   "pl": "cireșe",
+   "def": "cireașa",
+   "defPl": "cireșele",
+   "count": true,
+   "entry": "o cireașă, două cireșe",
+   "ask": "Unde este cireașa?",
+   "a": {
+    "w": "484cde4588ddad1b",
+    "e": "caff4a81e1c28418",
+    "q": "a75d366f2f07aa41"
+   }
+  },
+  "căpșună": {
+   "ro": "căpșună",
+   "en": "strawberry",
+   "emoji": "🍓",
+   "g": "f",
+   "pl": "căpșuni",
+   "def": "căpșuna",
+   "defPl": "căpșunile",
+   "count": true,
+   "entry": "o căpșună, două căpșuni",
+   "ask": "Unde este căpșuna?",
+   "a": {
+    "w": "f489ddfcfa36b58d",
+    "e": "ebf4448dabb86a85",
+    "q": "fe47a080753700b8"
+   }
+  },
+  "piersică": {
+   "ro": "piersică",
+   "en": "peach",
+   "emoji": "🍑",
+   "g": "f",
+   "pl": "piersici",
+   "def": "piersica",
+   "defPl": "piersicile",
+   "count": true,
+   "entry": "o piersică, două piersici",
+   "ask": "Unde este piersica?",
+   "a": {
+    "w": "085926b712edcaec",
+    "e": "9f7bca9112c4f24e",
+    "q": "550b720131858311"
+   }
+  },
+  "strugure": {
+   "ro": "strugure",
+   "en": "bunch of grapes",
+   "emoji": "🍇",
+   "g": "m",
+   "pl": "struguri",
+   "def": "strugurele",
+   "defPl": "strugurii",
+   "count": true,
+   "entry": "un strugure, doi struguri",
+   "ask": "Unde este strugurele?",
+   "a": {
+    "w": "ed30fb42161de3d2",
+    "e": "94a3f55598f8455c",
+    "q": "882d0d953a3be9d4"
+   }
+  },
+  "pepene": {
+   "ro": "pepene",
+   "en": "watermelon",
+   "emoji": "🍉",
+   "g": "m",
+   "pl": "pepeni",
+   "def": "pepenele",
+   "defPl": "pepenii",
+   "count": true,
+   "entry": "un pepene, doi pepeni",
+   "ask": "Unde este pepenele?",
+   "a": {
+    "w": "ad380f0d1ee82517",
+    "e": "85ff7ca5a1f27301",
+    "q": "6842a7080708c265"
+   }
+  },
+  "banană": {
+   "ro": "banană",
+   "en": "banana",
+   "emoji": "🍌",
+   "g": "f",
+   "pl": "banane",
+   "def": "banana",
+   "defPl": "bananele",
+   "count": true,
+   "entry": "o banană, două banane",
+   "ask": "Unde este banana?",
+   "a": {
+    "w": "0bcfbb9166d45d52",
+    "e": "e15e06132f4c9247",
+    "q": "4bb4437a0c30110b"
+   }
+  },
+  "roșie": {
+   "ro": "roșie",
+   "en": "tomato",
+   "emoji": "🍅",
+   "g": "f",
+   "pl": "roșii",
+   "def": "roșia",
+   "defPl": "roșiile",
+   "count": true,
+   "entry": "o roșie, două roșii",
+   "ask": "Unde este roșia?",
+   "a": {
+    "w": "729b0c1450cacbcd",
+    "e": "f842b552d089db76",
+    "q": "5ecc3df5bc8c38ac"
+   }
+  },
+  "cartof": {
+   "ro": "cartof",
+   "en": "potato",
+   "emoji": "🥔",
+   "g": "m",
+   "pl": "cartofi",
+   "def": "cartoful",
+   "defPl": "cartofii",
+   "count": true,
+   "entry": "un cartof, doi cartofi",
+   "ask": "Unde este cartoful?",
+   "a": {
+    "w": "605990047fcf5729",
+    "e": "ef5ae6feae18a380",
+    "q": "6f54b7e48702f436"
+   }
+  },
+  "morcov": {
+   "ro": "morcov",
+   "en": "carrot",
+   "emoji": "🥕",
+   "g": "m",
+   "pl": "morcovi",
+   "def": "morcovul",
+   "defPl": "morcovii",
+   "count": true,
+   "entry": "un morcov, doi morcovi",
+   "ask": "Unde este morcovul?",
+   "a": {
+    "w": "182bb0ad78a8a9c9",
+    "e": "5c7a00b549b36aed",
+    "q": "9c538b2f751894e1"
+   }
+  },
+  "ceapă": {
+   "ro": "ceapă",
+   "en": "onion",
+   "emoji": "🧅",
+   "g": "f",
+   "pl": "cepe",
+   "def": "ceapa",
+   "defPl": "cepele",
+   "count": true,
+   "entry": "o ceapă, două cepe",
+   "ask": "Unde este ceapa?",
+   "a": {
+    "w": "fcd55d0f04c8f549",
+    "e": "8b3e6d5ab3d6b0b9",
+    "q": "cd4c55d3ee923b57"
+   }
+  },
+  "usturoi": {
+   "ro": "usturoi",
+   "en": "garlic",
+   "emoji": "🧄",
+   "g": "m",
+   "pl": "usturoi",
+   "def": "usturoiul",
+   "defPl": "usturoii",
+   "count": false,
+   "ask": "Unde este usturoiul?",
+   "a": {
+    "w": "b5049779fcd4f1f0",
+    "q": "1a212b80b1758c7c"
+   }
+  },
+  "castravete": {
+   "ro": "castravete",
+   "en": "cucumber",
+   "emoji": "🥒",
+   "g": "m",
+   "pl": "castraveți",
+   "def": "castravetele",
+   "defPl": "castraveții",
+   "count": true,
+   "entry": "un castravete, doi castraveți",
+   "ask": "Unde este castravetele?",
+   "a": {
+    "w": "59c770917a3aafab",
+    "e": "c32a4593c2f7867a",
+    "q": "6d3fbc3c3fc13ba7"
+   }
+  },
+  "porumb": {
+   "ro": "porumb",
+   "en": "corn",
+   "emoji": "🌽",
+   "g": "m",
+   "pl": "porumbi",
+   "def": "porumbul",
+   "defPl": "porumbii",
+   "count": false,
+   "ask": "Unde este porumbul?",
+   "a": {
+    "w": "cbd1334d3c875915",
+    "q": "1047231358bb3056"
+   }
+  },
+  "ciupercă": {
+   "ro": "ciupercă",
+   "en": "mushroom",
+   "emoji": "🍄",
+   "g": "f",
+   "pl": "ciuperci",
+   "def": "ciuperca",
+   "defPl": "ciupercile",
+   "count": true,
+   "entry": "o ciupercă, două ciuperci",
+   "ask": "Unde este ciuperca?",
+   "a": {
+    "w": "8b3db943c749cae4",
+    "e": "1f9c472dfec07acd",
+    "q": "6452c3e77938a679"
+   }
+  },
+  "ardei": {
+   "ro": "ardei",
+   "en": "pepper",
+   "emoji": "🌶️",
+   "g": "m",
+   "pl": "ardei",
+   "def": "ardeiul",
+   "defPl": "ardeii",
+   "count": true,
+   "entry": "un ardei, doi ardei",
+   "ask": "Unde este ardeiul?",
+   "a": {
+    "w": "412d67db95585f02",
+    "e": "67be30254af2d4ff",
+    "q": "2e97b10617723264"
+   }
+  },
+  "vânătă": {
+   "ro": "vânătă",
+   "en": "eggplant",
+   "emoji": "🍆",
+   "g": "f",
+   "pl": "vinete",
+   "def": "vânăta",
+   "defPl": "vinetele",
+   "count": true,
+   "entry": "o vânătă, două vinete",
+   "ask": "Unde este vânăta?",
+   "a": {
+    "w": "4479f42d76c89fad",
+    "e": "9ff8217f9bf5639e",
+    "q": "ce538cb441b5850a"
+   }
+  },
+  "dovleac": {
+   "ro": "dovleac",
+   "en": "pumpkin",
+   "emoji": "🎃",
+   "g": "m",
+   "pl": "dovleci",
+   "def": "dovleacul",
+   "defPl": "dovlecii",
+   "count": true,
+   "entry": "un dovleac, doi dovleci",
+   "ask": "Unde este dovleacul?",
+   "a": {
+    "w": "9e69fb18c6dc8d05",
+    "e": "e4600fb348f257d7",
+    "q": "2dbdcee918fec49c"
+   }
+  },
+  "varză": {
+   "ro": "varză",
+   "en": "cabbage",
+   "emoji": "🥬",
+   "g": "f",
+   "pl": "verze",
+   "def": "varza",
+   "defPl": "verzele",
+   "count": true,
+   "entry": "o varză, două verze",
+   "ask": "Unde este varza?",
+   "a": {
+    "w": "b3aeb77002b80a2e",
+    "e": "6082f69cc7bacf5e",
+    "q": "bdf951ddb0cc9f66"
+   }
+  },
+  "pâine": {
+   "ro": "pâine",
+   "en": "bread",
+   "emoji": "🍞",
+   "g": "f",
+   "pl": "pâini",
+   "def": "pâinea",
+   "defPl": "pâinile",
+   "count": true,
+   "entry": "o pâine, două pâini",
+   "ask": "Unde este pâinea?",
+   "a": {
+    "w": "5edfeeb0a5f4dfde",
+    "e": "a13ab86ba6d52a96",
+    "q": "a5de24b3b58fda43"
+   }
+  },
+  "brânză": {
+   "ro": "brânză",
+   "en": "cheese",
+   "emoji": "🧀",
+   "g": "f",
+   "pl": "brânzeturi",
+   "def": "brânza",
+   "defPl": "brânzeturile",
+   "count": false,
+   "ask": "Unde este brânza?",
+   "a": {
+    "w": "7c4839910a0cf306",
+    "q": "368978f4a3d3f4e0"
+   }
+  },
+  "ou": {
+   "ro": "ou",
+   "en": "egg",
+   "emoji": "🥚",
+   "g": "n",
+   "pl": "ouă",
+   "def": "oul",
+   "defPl": "ouăle",
+   "count": true,
+   "entry": "un ou, două ouă",
+   "ask": "Unde este oul?",
+   "a": {
+    "w": "e6f8bebaae987a62",
+    "e": "1cea5fa7c60f4d3c",
+    "q": "83e1f8948c8f28c4"
+   }
+  },
+  "carne": {
+   "ro": "carne",
+   "en": "meat",
+   "emoji": "🥩",
+   "g": "f",
+   "pl": "cărnuri",
+   "def": "carnea",
+   "defPl": "cărnurile",
+   "count": false,
+   "ask": "Unde este carnea?",
+   "a": {
+    "w": "92b39f1cf493b2b5",
+    "q": "34a8164bde6ff2e7"
+   }
+  },
+  "supă": {
+   "ro": "supă",
+   "en": "soup",
+   "emoji": "🍲",
+   "g": "f",
+   "pl": "supe",
+   "def": "supa",
+   "defPl": "supele",
+   "count": true,
+   "entry": "o supă, două supe",
+   "ask": "Unde este supa?",
+   "a": {
+    "w": "25d7419d2785cfff",
+    "e": "acc50ee13f87174f",
+    "q": "cf2ff90f27d59843"
+   }
+  },
+  "salată": {
+   "ro": "salată",
+   "en": "salad",
+   "emoji": "🥗",
+   "g": "f",
+   "pl": "salate",
+   "def": "salata",
+   "defPl": "salatele",
+   "count": true,
+   "entry": "o salată, două salate",
+   "ask": "Unde este salata?",
+   "a": {
+    "w": "43c32b2dfb183819",
+    "e": "99004e74667b58b1",
+    "q": "92b617877446d21a"
+   }
+  },
+  "orez": {
+   "ro": "orez",
+   "en": "rice",
+   "emoji": "🍚",
+   "g": "n",
+   "pl": "orezuri",
+   "def": "orezul",
+   "defPl": "orezurile",
+   "count": false,
+   "ask": "Unde este orezul?",
+   "a": {
+    "w": "0cd6856c0166d598",
+    "q": "5331416a831fbbd8"
+   }
+  },
+  "unt": {
+   "ro": "unt",
+   "en": "butter",
+   "emoji": "🧈",
+   "g": "n",
+   "pl": "unturi",
+   "def": "untul",
+   "defPl": "unturile",
+   "count": false,
+   "ask": "Unde este untul?",
+   "a": {
+    "w": "c4778c5ac54d960d",
+    "q": "e7157636ebc4231e"
+   }
+  },
+  "sare": {
+   "ro": "sare",
+   "en": "salt",
+   "emoji": "🧂",
+   "g": "f",
+   "pl": "săruri",
+   "def": "sarea",
+   "defPl": "sărurile",
+   "count": false,
+   "ask": "Unde este sarea?",
+   "a": {
+    "w": "4d866a10a685bdc1",
+    "q": "d0ffb90077acc0c1"
+   }
+  },
+  "pizza": {
+   "ro": "pizza",
+   "en": "pizza",
+   "emoji": "🍕",
+   "g": "f",
+   "pl": "pizze",
+   "def": "pizza",
+   "defPl": "pizzele",
+   "count": true,
+   "entry": "o pizza, două pizze",
+   "ask": "Unde este pizza?",
+   "a": {
+    "w": "3eb4fb8b91a297d0",
+    "e": "0fba880c0087cd8f",
+    "q": "651da28b62869695"
+   }
+  },
+  "tort": {
+   "ro": "tort",
+   "en": "cake",
+   "emoji": "🎂",
+   "g": "n",
+   "pl": "torturi",
+   "def": "tortul",
+   "defPl": "torturile",
+   "count": true,
+   "entry": "un tort, două torturi",
+   "ask": "Unde este tortul?",
+   "a": {
+    "w": "f7dc31f42704fdd2",
+    "e": "fa4536af80759b4d",
+    "q": "d634cd2e011ff2df"
+   }
+  },
+  "înghețată": {
+   "ro": "înghețată",
+   "en": "ice cream",
+   "emoji": "🍦",
+   "g": "f",
+   "pl": "înghețate",
+   "def": "înghețata",
+   "defPl": "înghețatele",
+   "count": true,
+   "entry": "o înghețată, două înghețate",
+   "ask": "Unde este înghețata?",
+   "a": {
+    "w": "ef15ae85132abb6d",
+    "e": "a7a6e91d603977ff",
+    "q": "21b96803eddd16c3"
+   }
+  },
+  "ciocolată": {
+   "ro": "ciocolată",
+   "en": "chocolate",
+   "emoji": "🍫",
+   "g": "f",
+   "pl": "ciocolate",
+   "def": "ciocolata",
+   "defPl": "ciocolatele",
+   "count": true,
+   "entry": "o ciocolată, două ciocolate",
+   "ask": "Unde este ciocolata?",
+   "a": {
+    "w": "d1cf70667597c70a",
+    "e": "62ab41dfe2245926",
+    "q": "ffe5e0e10ac97a1a"
+   }
+  },
+  "gogoașă": {
+   "ro": "gogoașă",
+   "en": "doughnut",
+   "emoji": "🍩",
+   "g": "f",
+   "pl": "gogoși",
+   "def": "gogoașa",
+   "defPl": "gogoșile",
+   "count": true,
+   "entry": "o gogoașă, două gogoși",
+   "ask": "Unde este gogoașa?",
+   "a": {
+    "w": "3a058bb1707a2274",
+    "e": "297a9627fc48fe30",
+    "q": "10d3c2adb09af37a"
+   }
+  },
+  "clătită": {
+   "ro": "clătită",
+   "en": "pancake",
+   "emoji": "🥞",
+   "g": "f",
+   "pl": "clătite",
+   "def": "clătita",
+   "defPl": "clătitele",
+   "count": true,
+   "entry": "o clătită, două clătite",
+   "ask": "Unde este clătita?",
+   "a": {
+    "w": "240ae4ba2afd4cb3",
+    "e": "438a26bd72e1487c",
+    "q": "6de6940e8d111de2"
+   }
+  },
+  "plăcintă": {
+   "ro": "plăcintă",
+   "en": "pie",
+   "emoji": "🥧",
+   "g": "f",
+   "pl": "plăcinte",
+   "def": "plăcinta",
+   "defPl": "plăcintele",
+   "count": true,
+   "entry": "o plăcintă, două plăcinte",
+   "ask": "Unde este plăcinta?",
+   "a": {
+    "w": "811ea3a3cadb61ce",
+    "e": "6c9bbc8ee44da53e",
+    "q": "2b6a36a8247e9501"
+   }
+  },
+  "bomboană": {
+   "ro": "bomboană",
+   "en": "candy",
+   "emoji": "🍬",
+   "g": "f",
+   "pl": "bomboane",
+   "def": "bomboana",
+   "defPl": "bomboanele",
+   "count": true,
+   "entry": "o bomboană, două bomboane",
+   "ask": "Unde este bomboana?",
+   "a": {
+    "w": "ed535b1a5c59f175",
+    "e": "729128211bcd3508",
+    "q": "9c9d4a4df2456978"
+   }
+  },
+  "prăjitură": {
+   "ro": "prăjitură",
+   "en": "cookie",
+   "emoji": "🍪",
+   "g": "f",
+   "pl": "prăjituri",
+   "def": "prăjitura",
+   "defPl": "prăjiturile",
+   "count": true,
+   "entry": "o prăjitură, două prăjituri",
+   "ask": "Unde este prăjitura?",
+   "a": {
+    "w": "824e62c08fc45e63",
+    "e": "3f4169d85b602ced",
+    "q": "aca308c17bd66d34"
+   }
+  },
+  "covrig": {
+   "ro": "covrig",
+   "en": "pretzel",
+   "emoji": "🥨",
+   "g": "m",
+   "pl": "covrigi",
+   "def": "covrigul",
+   "defPl": "covrigii",
+   "count": true,
+   "entry": "un covrig, doi covrigi",
+   "ask": "Unde este covrigul?",
+   "a": {
+    "w": "bf38811cc0a51bc2",
+    "e": "c64b02dd8df3105f",
+    "q": "51e16a33d58829db"
+   }
+  },
+  "miere": {
+   "ro": "miere",
+   "en": "honey",
+   "emoji": "🍯",
+   "g": "f",
+   "pl": "mieri",
+   "def": "mierea",
+   "defPl": "mierile",
+   "count": false,
+   "ask": "Unde este mierea?",
+   "a": {
+    "w": "5a248524e5211d50",
+    "q": "b132b338f24e563d"
+   }
+  },
+  "apă": {
+   "ro": "apă",
+   "en": "water",
+   "emoji": "💧",
+   "g": "f",
+   "pl": "ape",
+   "def": "apa",
+   "defPl": "apele",
+   "count": false,
+   "ask": "Unde este apa?",
+   "a": {
+    "w": "b1fe90e16ccde354",
+    "q": "c4002672e62bbf49"
+   }
+  },
+  "lapte": {
+   "ro": "lapte",
+   "en": "milk",
+   "emoji": "🥛",
+   "g": "n",
+   "pl": "lăpturi",
+   "def": "laptele",
+   "defPl": "lăpturile",
+   "count": false,
+   "ask": "Unde este laptele?",
+   "a": {
+    "w": "677ddbf5fc1d6f8e",
+    "q": "099b3264d4ef9071"
+   }
+  },
+  "cafea": {
+   "ro": "cafea",
+   "en": "coffee",
+   "emoji": "☕",
+   "g": "f",
+   "pl": "cafele",
+   "def": "cafeaua",
+   "defPl": "cafelele",
+   "count": true,
+   "entry": "o cafea, două cafele",
+   "ask": "Unde este cafeaua?",
+   "a": {
+    "w": "a22f946b17187691",
+    "e": "9a492786a75f73e8",
+    "q": "b6eedbf43db5c872"
+   }
+  },
+  "ceai": {
+   "ro": "ceai",
+   "en": "tea",
+   "emoji": "🍵",
+   "g": "n",
+   "pl": "ceaiuri",
+   "def": "ceaiul",
+   "defPl": "ceaiurile",
+   "count": true,
+   "entry": "un ceai, două ceaiuri",
+   "ask": "Unde este ceaiul?",
+   "a": {
+    "w": "177da622d85adf10",
+    "e": "ea5ea33c6328f9f2",
+    "q": "19e3c94d5388bff4"
+   }
+  },
+  "suc": {
+   "ro": "suc",
+   "en": "juice",
+   "emoji": "🧃",
+   "g": "n",
+   "pl": "sucuri",
+   "def": "sucul",
+   "defPl": "sucurile",
+   "count": true,
+   "entry": "un suc, două sucuri",
+   "ask": "Unde este sucul?",
+   "a": {
+    "w": "944fd24c46cebd69",
+    "e": "8b5b20edf9b93417",
+    "q": "1f2e8ea6517dedee"
+   }
+  },
+  "vin": {
+   "ro": "vin",
+   "en": "wine",
+   "emoji": "🍷",
+   "g": "n",
+   "pl": "vinuri",
+   "def": "vinul",
+   "defPl": "vinurile",
+   "count": true,
+   "entry": "un vin, două vinuri",
+   "ask": "Unde este vinul?",
+   "a": {
+    "w": "ca45e05037bb3788",
+    "e": "e053d526781ef6b6",
+    "q": "56a25d6ce4399aff"
+   }
+  },
+  "bere": {
+   "ro": "bere",
+   "en": "beer",
+   "emoji": "🍺",
+   "g": "f",
+   "pl": "beri",
+   "def": "berea",
+   "defPl": "berile",
+   "count": true,
+   "entry": "o bere, două beri",
+   "ask": "Unde este berea?",
+   "a": {
+    "w": "fcca59633dcd4ed6",
+    "e": "f3d6bc7e115d1d5e",
+    "q": "ac6321685465416a"
+   }
+  },
+  "sticlă": {
+   "ro": "sticlă",
+   "en": "bottle",
+   "emoji": "🍾",
+   "g": "f",
+   "pl": "sticle",
+   "def": "sticla",
+   "defPl": "sticlele",
+   "count": true,
+   "entry": "o sticlă, două sticle",
+   "ask": "Unde este sticla?",
+   "a": {
+    "w": "e52fc4b041a6923a",
+    "e": "702f407da0a728fe",
+    "q": "96187ff01191344f"
+   }
+  },
+  "pahar": {
+   "ro": "pahar",
+   "en": "glass",
+   "emoji": "🥃",
+   "g": "n",
+   "pl": "pahare",
+   "def": "paharul",
+   "defPl": "paharele",
+   "count": true,
+   "entry": "un pahar, două pahare",
+   "ask": "Unde este paharul?",
+   "a": {
+    "w": "129d78da3572ff14",
+    "e": "a7a620b7d4932902",
+    "q": "bc5d65934f6715c3"
+   }
+  },
+  "farfurie": {
+   "ro": "farfurie",
+   "en": "plate",
+   "emoji": "🍽️",
+   "g": "f",
+   "pl": "farfurii",
+   "def": "farfuria",
+   "defPl": "farfuriile",
+   "count": true,
+   "entry": "o farfurie, două farfurii",
+   "ask": "Unde este farfuria?",
+   "a": {
+    "w": "c5bac54175f1425d",
+    "e": "8a70a8ebeead28f0",
+    "q": "5170bf86d0db7a15"
+   }
+  },
+  "lingură": {
+   "ro": "lingură",
+   "en": "spoon",
+   "emoji": "🥄",
+   "g": "f",
+   "pl": "linguri",
+   "def": "lingura",
+   "defPl": "lingurile",
+   "count": true,
+   "entry": "o lingură, două linguri",
+   "ask": "Unde este lingura?",
+   "a": {
+    "w": "70d1a568aabfbb09",
+    "e": "1214dfe90f6255b2",
+    "q": "6a588b580b3bca19"
+   }
+  },
+  "cuțit": {
+   "ro": "cuțit",
+   "en": "knife",
+   "emoji": "🔪",
+   "g": "n",
+   "pl": "cuțite",
+   "def": "cuțitul",
+   "defPl": "cuțitele",
+   "count": true,
+   "entry": "un cuțit, două cuțite",
+   "ask": "Unde este cuțitul?",
+   "a": {
+    "w": "e33696144605e71d",
+    "e": "f763ac667c3771e9",
+    "q": "0d24e53550380ec8"
+   }
+  },
+  "soare": {
+   "ro": "soare",
+   "en": "sun",
+   "emoji": "☀️",
+   "g": "m",
+   "pl": "sori",
+   "def": "soarele",
+   "defPl": "sorii",
+   "count": false,
+   "ask": "Unde este soarele?",
+   "a": {
+    "w": "38363b039ca90815",
+    "q": "79b8057bb053654c"
+   }
+  },
+  "lună": {
+   "ro": "lună",
+   "en": "moon",
+   "emoji": "🌙",
+   "g": "f",
+   "pl": "luni",
+   "def": "luna",
+   "defPl": "lunile",
+   "count": true,
+   "entry": "o lună, două luni",
+   "ask": "Unde este luna?",
+   "a": {
+    "w": "2bee4db93e076303",
+    "e": "6a38ed76b6436924",
+    "q": "7eb296238b1309e8"
+   }
+  },
+  "stea": {
+   "ro": "stea",
+   "en": "star",
+   "emoji": "⭐",
+   "g": "f",
+   "pl": "stele",
+   "def": "steaua",
+   "defPl": "stelele",
+   "count": true,
+   "entry": "o stea, două stele",
+   "ask": "Unde este steaua?",
+   "a": {
+    "w": "8955ee2b17cd9a46",
+    "e": "e635e5908b7d6b48",
+    "q": "7aa896167e020e6b"
+   }
+  },
+  "nor": {
+   "ro": "nor",
+   "en": "cloud",
+   "emoji": "☁️",
+   "g": "m",
+   "pl": "nori",
+   "def": "norul",
+   "defPl": "norii",
+   "count": true,
+   "entry": "un nor, doi nori",
+   "ask": "Unde este norul?",
+   "a": {
+    "w": "13ff578170f4d1a2",
+    "e": "be0f6d315e55785b",
+    "q": "d46f9a50d86afe65"
+   }
+  },
+  "ploaie": {
+   "ro": "ploaie",
+   "en": "rain",
+   "emoji": "🌧️",
+   "g": "f",
+   "pl": "ploi",
+   "def": "ploaia",
+   "defPl": "ploile",
+   "count": true,
+   "entry": "o ploaie, două ploi",
+   "ask": "Unde este ploaia?",
+   "a": {
+    "w": "4d3081d55ae9e626",
+    "e": "0d29d03736e236eb",
+    "q": "1dd69ae344d56cad"
+   }
+  },
+  "zăpadă": {
+   "ro": "zăpadă",
+   "en": "snow",
+   "emoji": "❄️",
+   "g": "f",
+   "pl": "zăpezi",
+   "def": "zăpada",
+   "defPl": "zăpezile",
+   "count": false,
+   "ask": "Unde este zăpada?",
+   "a": {
+    "w": "5fd3743cf9d77181",
+    "q": "80d3c876d892a3a6"
+   }
+  },
+  "vânt": {
+   "ro": "vânt",
+   "en": "wind",
+   "emoji": "💨",
+   "g": "n",
+   "pl": "vânturi",
+   "def": "vântul",
+   "defPl": "vânturile",
+   "count": true,
+   "entry": "un vânt, două vânturi",
+   "ask": "Unde este vântul?",
+   "a": {
+    "w": "e586e8f1ebc3750c",
+    "e": "ddbfeb2e35007366",
+    "q": "5df174861b09b0af"
+   }
+  },
+  "furtună": {
+   "ro": "furtună",
+   "en": "storm",
+   "emoji": "⛈️",
+   "g": "f",
+   "pl": "furtuni",
+   "def": "furtuna",
+   "defPl": "furtunile",
+   "count": true,
+   "entry": "o furtună, două furtuni",
+   "ask": "Unde este furtuna?",
+   "a": {
+    "w": "2f61e206dbe08874",
+    "e": "351e812d6a42f269",
+    "q": "dd3ec242cdbf9735"
+   }
+  },
+  "foc": {
+   "ro": "foc",
+   "en": "fire",
+   "emoji": "🔥",
+   "g": "n",
+   "pl": "focuri",
+   "def": "focul",
+   "defPl": "focurile",
+   "count": true,
+   "entry": "un foc, două focuri",
+   "ask": "Unde este focul?",
+   "a": {
+    "w": "b92752d0e51226bb",
+    "e": "cc941b7bb7aa92c8",
+    "q": "e89b19ff5c315254"
+   }
+  },
+  "gheață": {
+   "ro": "gheață",
+   "en": "ice",
+   "emoji": "🧊",
+   "g": "f",
+   "pl": "ghețuri",
+   "def": "gheața",
+   "defPl": "ghețurile",
+   "count": false,
+   "ask": "Unde este gheața?",
+   "a": {
+    "w": "025c61c1e8b2cf3e",
+    "q": "e15eb1e4ac7951cb"
+   }
+  },
+  "curcubeu": {
+   "ro": "curcubeu",
+   "en": "rainbow",
+   "emoji": "🌈",
+   "g": "n",
+   "pl": "curcubeie",
+   "def": "curcubeul",
+   "defPl": "curcubeiele",
+   "count": true,
+   "entry": "un curcubeu, două curcubeie",
+   "ask": "Unde este curcubeul?",
+   "a": {
+    "w": "02ad663874d1ead9",
+    "e": "db40f56bfbd77ccd",
+    "q": "f2462bbcbfc0701d"
+   }
+  },
+  "fulger": {
+   "ro": "fulger",
+   "en": "lightning",
+   "emoji": "⚡",
+   "g": "n",
+   "pl": "fulgere",
+   "def": "fulgerul",
+   "defPl": "fulgerele",
+   "count": true,
+   "entry": "un fulger, două fulgere",
+   "ask": "Unde este fulgerul?",
+   "a": {
+    "w": "211b7ef041c61ddf",
+    "e": "7a5b5b13ce9b8053",
+    "q": "8f404ed589c24170"
+   }
+  },
+  "munte": {
+   "ro": "munte",
+   "en": "mountain",
+   "emoji": "⛰️",
+   "g": "m",
+   "pl": "munți",
+   "def": "muntele",
+   "defPl": "munții",
+   "count": true,
+   "entry": "un munte, doi munți",
+   "ask": "Unde este muntele?",
+   "a": {
+    "w": "c698e0693bfa7116",
+    "e": "4a08253b35be0e76",
+    "q": "804a91fb858b8748"
+   }
+  },
+  "mare": {
+   "ro": "mare",
+   "en": "sea",
+   "emoji": "🌊",
+   "g": "f",
+   "pl": "mări",
+   "def": "marea",
+   "defPl": "mările",
+   "count": true,
+   "entry": "o mare, două mări",
+   "ask": "Unde este marea?",
+   "a": {
+    "w": "48706a003f44a3b8",
+    "e": "1c6bb3cd4ceb9b03",
+    "q": "6bea7361a99161a1"
+   }
+  },
+  "insulă": {
+   "ro": "insulă",
+   "en": "island",
+   "emoji": "🏝️",
+   "g": "f",
+   "pl": "insule",
+   "def": "insula",
+   "defPl": "insulele",
+   "count": true,
+   "entry": "o insulă, două insule",
+   "ask": "Unde este insula?",
+   "a": {
+    "w": "c1f39e9ea7aaa181",
+    "e": "1e2b47f0c69d3669",
+    "q": "e9f798459e7e803a"
+   }
+  },
+  "plajă": {
+   "ro": "plajă",
+   "en": "beach",
+   "emoji": "🏖️",
+   "g": "f",
+   "pl": "plaje",
+   "def": "plaja",
+   "defPl": "plajele",
+   "count": true,
+   "entry": "o plajă, două plaje",
+   "ask": "Unde este plaja?",
+   "a": {
+    "w": "53fd42d122fea279",
+    "e": "f2860bfaf8ed0079",
+    "q": "a82915825ad3141f"
+   }
+  },
+  "copac": {
+   "ro": "copac",
+   "en": "tree",
+   "emoji": "🌳",
+   "g": "m",
+   "pl": "copaci",
+   "def": "copacul",
+   "defPl": "copacii",
+   "count": true,
+   "entry": "un copac, doi copaci",
+   "ask": "Unde este copacul?",
+   "a": {
+    "w": "cdf62cd50dd69ae3",
+    "e": "e0e9ef10c9639442",
+    "q": "dc48ecc527fb0242"
+   }
+  },
+  "brad": {
+   "ro": "brad",
+   "en": "fir tree",
+   "emoji": "🌲",
+   "g": "m",
+   "pl": "brazi",
+   "def": "bradul",
+   "defPl": "brazii",
+   "count": true,
+   "entry": "un brad, doi brazi",
+   "ask": "Unde este bradul?",
+   "a": {
+    "w": "83f106717751dd7a",
+    "e": "a34ebea99ad2be75",
+    "q": "bdd91da8870ad079"
+   }
+  },
+  "floare": {
+   "ro": "floare",
+   "en": "flower",
+   "emoji": "🌸",
+   "g": "f",
+   "pl": "flori",
+   "def": "floarea",
+   "defPl": "florile",
+   "count": true,
+   "entry": "o floare, două flori",
+   "ask": "Unde este floarea?",
+   "a": {
+    "w": "ba0b2d5f21f1e4d5",
+    "e": "f984a1370db798b6",
+    "q": "1f5c55e3a3839cd7"
+   }
+  },
+  "trandafir": {
+   "ro": "trandafir",
+   "en": "rose",
+   "emoji": "🌹",
+   "g": "m",
+   "pl": "trandafiri",
+   "def": "trandafirul",
+   "defPl": "trandafirii",
+   "count": true,
+   "entry": "un trandafir, doi trandafiri",
+   "ask": "Unde este trandafirul?",
+   "a": {
+    "w": "8467189c2204336d",
+    "e": "6552322d86c2da50",
+    "q": "240df5c65c490ff3"
+   }
+  },
+  "frunză": {
+   "ro": "frunză",
+   "en": "leaf",
+   "emoji": "🍁",
+   "g": "f",
+   "pl": "frunze",
+   "def": "frunza",
+   "defPl": "frunzele",
+   "count": true,
+   "entry": "o frunză, două frunze",
+   "ask": "Unde este frunza?",
+   "a": {
+    "w": "f631c2b5557dbc31",
+    "e": "cfc1550ce4081c44",
+    "q": "1693b67c9d6d471e"
+   }
+  },
+  "piatră": {
+   "ro": "piatră",
+   "en": "stone",
+   "emoji": "🪨",
+   "g": "f",
+   "pl": "pietre",
+   "def": "piatra",
+   "defPl": "pietrele",
+   "count": true,
+   "entry": "o piatră, două pietre",
+   "ask": "Unde este piatra?",
+   "a": {
+    "w": "61851333e9a22433",
+    "e": "1a6f598759a04049",
+    "q": "d726602463e58494"
+   }
+  },
+  "casă": {
+   "ro": "casă",
+   "en": "house",
+   "emoji": "🏠",
+   "g": "f",
+   "pl": "case",
+   "def": "casa",
+   "defPl": "casele",
+   "count": true,
+   "entry": "o casă, două case",
+   "ask": "Unde este casa?",
+   "a": {
+    "w": "ddbacf828b3812af",
+    "e": "a00fa1053c2d3c1b",
+    "q": "570f71d8c793bd2d"
+   }
+  },
+  "ușă": {
+   "ro": "ușă",
+   "en": "door",
+   "emoji": "🚪",
+   "g": "f",
+   "pl": "uși",
+   "def": "ușa",
+   "defPl": "ușile",
+   "count": true,
+   "entry": "o ușă, două uși",
+   "ask": "Unde este ușa?",
+   "a": {
+    "w": "2ed12fd042c18ec5",
+    "e": "9b7d3795b9f92a79",
+    "q": "3aeb814c76d42b3d"
+   }
+  },
+  "fereastră": {
+   "ro": "fereastră",
+   "en": "window",
+   "emoji": "🪟",
+   "g": "f",
+   "pl": "ferestre",
+   "def": "fereastra",
+   "defPl": "ferestrele",
+   "count": true,
+   "entry": "o fereastră, două ferestre",
+   "ask": "Unde este fereastra?",
+   "a": {
+    "w": "dc702585b53f240e",
+    "e": "ba7465909ebcfdfb",
+    "q": "92fdad64c56e7117"
+   }
+  },
+  "pat": {
+   "ro": "pat",
+   "en": "bed",
+   "emoji": "🛏️",
+   "g": "n",
+   "pl": "paturi",
+   "def": "patul",
+   "defPl": "paturile",
+   "count": true,
+   "entry": "un pat, două paturi",
+   "ask": "Unde este patul?",
+   "a": {
+    "w": "58596ccc1f7a9ee6",
+    "e": "638d9e34ab2ce73b",
+    "q": "7178161b32f1d785"
+   }
+  },
+  "scaun": {
+   "ro": "scaun",
+   "en": "chair",
+   "emoji": "🪑",
+   "g": "n",
+   "pl": "scaune",
+   "def": "scaunul",
+   "defPl": "scaunele",
+   "count": true,
+   "entry": "un scaun, două scaune",
+   "ask": "Unde este scaunul?",
+   "a": {
+    "w": "98a23dfc9a7153cb",
+    "e": "93362e2bd216533b",
+    "q": "39474e3176925e46"
+   }
+  },
+  "canapea": {
+   "ro": "canapea",
+   "en": "sofa",
+   "emoji": "🛋️",
+   "g": "f",
+   "pl": "canapele",
+   "def": "canapeaua",
+   "defPl": "canapelele",
+   "count": true,
+   "entry": "o canapea, două canapele",
+   "ask": "Unde este canapeaua?",
+   "a": {
+    "w": "0b1bc75539b68803",
+    "e": "cbe66bf6a216f329",
+    "q": "ff67c9fe6689236c"
+   }
+  },
+  "cheie": {
+   "ro": "cheie",
+   "en": "key",
+   "emoji": "🔑",
+   "g": "f",
+   "pl": "chei",
+   "def": "cheia",
+   "defPl": "cheile",
+   "count": true,
+   "entry": "o cheie, două chei",
+   "ask": "Unde este cheia?",
+   "a": {
+    "w": "73c160b48b291498",
+    "e": "2af9780b1024f82e",
+    "q": "c4fbd47a1a4dfde7"
+   }
+  },
+  "ceas": {
+   "ro": "ceas",
+   "en": "clock",
+   "emoji": "⏰",
+   "g": "n",
+   "pl": "ceasuri",
+   "def": "ceasul",
+   "defPl": "ceasurile",
+   "count": true,
+   "entry": "un ceas, două ceasuri",
+   "ask": "Unde este ceasul?",
+   "a": {
+    "w": "8b352faf8d0cef71",
+    "e": "35d5bfdeb398e4b4",
+    "q": "b482324800d6c932"
+   }
+  },
+  "bec": {
+   "ro": "bec",
+   "en": "lightbulb",
+   "emoji": "💡",
+   "g": "n",
+   "pl": "becuri",
+   "def": "becul",
+   "defPl": "becurile",
+   "count": true,
+   "entry": "un bec, două becuri",
+   "ask": "Unde este becul?",
+   "a": {
+    "w": "5ece5c77d58d7e1b",
+    "e": "1a95e445ac13f527",
+    "q": "055d24f9db5e4e96"
+   }
+  },
+  "televizor": {
+   "ro": "televizor",
+   "en": "television",
+   "emoji": "📺",
+   "g": "n",
+   "pl": "televizoare",
+   "def": "televizorul",
+   "defPl": "televizoarele",
+   "count": true,
+   "entry": "un televizor, două televizoare",
+   "ask": "Unde este televizorul?",
+   "a": {
+    "w": "3bb8e3022c66f5c5",
+    "e": "8284d65682deb0b6",
+    "q": "39c9ec50cf24fdbd"
+   }
+  },
+  "telefon": {
+   "ro": "telefon",
+   "en": "phone",
+   "emoji": "📱",
+   "g": "n",
+   "pl": "telefoane",
+   "def": "telefonul",
+   "defPl": "telefoanele",
+   "count": true,
+   "entry": "un telefon, două telefoane",
+   "ask": "Unde este telefonul?",
+   "a": {
+    "w": "6cf719c422500391",
+    "e": "82d8a76afa4fc834",
+    "q": "290722d709dc1b13"
+   }
+  },
+  "oglindă": {
+   "ro": "oglindă",
+   "en": "mirror",
+   "emoji": "🪞",
+   "g": "f",
+   "pl": "oglinzi",
+   "def": "oglinda",
+   "defPl": "oglinzile",
+   "count": true,
+   "entry": "o oglindă, două oglinzi",
+   "ask": "Unde este oglinda?",
+   "a": {
+    "w": "f23b98908de860fc",
+    "e": "9757d1f1f7d66299",
+    "q": "98c4ad348d722e06"
+   }
+  },
+  "duș": {
+   "ro": "duș",
+   "en": "shower",
+   "emoji": "🚿",
+   "g": "n",
+   "pl": "dușuri",
+   "def": "dușul",
+   "defPl": "dușurile",
+   "count": true,
+   "entry": "un duș, două dușuri",
+   "ask": "Unde este dușul?",
+   "a": {
+    "w": "34eb3ad8d31d4578",
+    "e": "fa12c73bf049e6dc",
+    "q": "7a9ff513e5d59921"
+   }
+  },
+  "cadă": {
+   "ro": "cadă",
+   "en": "bathtub",
+   "emoji": "🛁",
+   "g": "f",
+   "pl": "căzi",
+   "def": "cada",
+   "defPl": "căzile",
+   "count": true,
+   "entry": "o cadă, două căzi",
+   "ask": "Unde este cada?",
+   "a": {
+    "w": "577299bd8ac13d62",
+    "e": "94c87d7455bcc24f",
+    "q": "f6dbe533e9195ffe"
+   }
+  },
+  "toaletă": {
+   "ro": "toaletă",
+   "en": "toilet",
+   "emoji": "🚽",
+   "g": "f",
+   "pl": "toalete",
+   "def": "toaleta",
+   "defPl": "toaletele",
+   "count": true,
+   "entry": "o toaletă, două toalete",
+   "ask": "Unde este toaleta?",
+   "a": {
+    "w": "dad99948d8f1a861",
+    "e": "cfb2153d4d30efbc",
+    "q": "73b97e46275750a6"
+   }
+  },
+  "săpun": {
+   "ro": "săpun",
+   "en": "soap",
+   "emoji": "🧼",
+   "g": "n",
+   "pl": "săpunuri",
+   "def": "săpunul",
+   "defPl": "săpunurile",
+   "count": true,
+   "entry": "un săpun, două săpunuri",
+   "ask": "Unde este săpunul?",
+   "a": {
+    "w": "c031ade000512634",
+    "e": "6e1766e6a4d0bab1",
+    "q": "41c023b41f380a43"
+   }
+  },
+  "burete": {
+   "ro": "burete",
+   "en": "sponge",
+   "emoji": "🧽",
+   "g": "m",
+   "pl": "bureți",
+   "def": "buretele",
+   "defPl": "bureții",
+   "count": true,
+   "entry": "un burete, doi bureți",
+   "ask": "Unde este buretele?",
+   "a": {
+    "w": "1dfde2d1febd9629",
+    "e": "2ac0876aa25b6986",
+    "q": "ff37f2dc3cd2e89a"
+   }
+  },
+  "cutie": {
+   "ro": "cutie",
+   "en": "box",
+   "emoji": "📦",
+   "g": "f",
+   "pl": "cutii",
+   "def": "cutia",
+   "defPl": "cutiile",
+   "count": true,
+   "entry": "o cutie, două cutii",
+   "ask": "Unde este cutia?",
+   "a": {
+    "w": "ba1d2eecfdedaf36",
+    "e": "5a38da35733258fe",
+    "q": "e8dd95b9de47da99"
+   }
+  },
+  "coș": {
+   "ro": "coș",
+   "en": "basket",
+   "emoji": "🧺",
+   "g": "n",
+   "pl": "coșuri",
+   "def": "coșul",
+   "defPl": "coșurile",
+   "count": true,
+   "entry": "un coș, două coșuri",
+   "ask": "Unde este coșul?",
+   "a": {
+    "w": "50008aec3202b5ce",
+    "e": "786805d8a455089e",
+    "q": "c07d81a79cd2cd2e"
+   }
+  },
+  "foarfecă": {
+   "ro": "foarfecă",
+   "en": "scissors",
+   "emoji": "✂️",
+   "g": "f",
+   "pl": "foarfeci",
+   "def": "foarfeca",
+   "defPl": "foarfecile",
+   "count": true,
+   "entry": "o foarfecă, două foarfeci",
+   "ask": "Unde este foarfeca?",
+   "a": {
+    "w": "7959861a1ccf800b",
+    "e": "e98fb0281bbecdab",
+    "q": "c1de39fd7011c623"
+   }
+  },
+  "lanternă": {
+   "ro": "lanternă",
+   "en": "flashlight",
+   "emoji": "🔦",
+   "g": "f",
+   "pl": "lanterne",
+   "def": "lanterna",
+   "defPl": "lanternele",
+   "count": true,
+   "entry": "o lanternă, două lanterne",
+   "ask": "Unde este lanterna?",
+   "a": {
+    "w": "cc4a3372dd381522",
+    "e": "3f56159dfcde410f",
+    "q": "99d08ddaa7826201"
+   }
+  },
+  "baterie": {
+   "ro": "baterie",
+   "en": "battery",
+   "emoji": "🔋",
+   "g": "f",
+   "pl": "baterii",
+   "def": "bateria",
+   "defPl": "bateriile",
+   "count": true,
+   "entry": "o baterie, două baterii",
+   "ask": "Unde este bateria?",
+   "a": {
+    "w": "c10381832d31672f",
+    "e": "9bbfa994f6fc360f",
+    "q": "2edae82f9495564e"
+   }
+  },
+  "umbrelă": {
+   "ro": "umbrelă",
+   "en": "umbrella",
+   "emoji": "☂️",
+   "g": "f",
+   "pl": "umbrele",
+   "def": "umbrela",
+   "defPl": "umbrelele",
+   "count": true,
+   "entry": "o umbrelă, două umbrele",
+   "ask": "Unde este umbrela?",
+   "a": {
+    "w": "12c40c980bf53eec",
+    "e": "8930539346036bd8",
+    "q": "0b52124b65805968"
+   }
+  },
+  "lumânare": {
+   "ro": "lumânare",
+   "en": "candle",
+   "emoji": "🕯️",
+   "g": "f",
+   "pl": "lumânări",
+   "def": "lumânarea",
+   "defPl": "lumânările",
+   "count": true,
+   "entry": "o lumânare, două lumânări",
+   "ask": "Unde este lumânarea?",
+   "a": {
+    "w": "8941cbf1297f0254",
+    "e": "2eda7b617c275960",
+    "q": "563febb441f61a1d"
+   }
+  },
+  "cămașă": {
+   "ro": "cămașă",
+   "en": "shirt",
+   "emoji": "👔",
+   "g": "f",
+   "pl": "cămăși",
+   "def": "cămașa",
+   "defPl": "cămășile",
+   "count": true,
+   "entry": "o cămașă, două cămăși",
+   "ask": "Unde este cămașa?",
+   "a": {
+    "w": "7db61126ad42777e",
+    "e": "9633856e1f1dd2c0",
+    "q": "296e5f3d4aa50f63"
+   }
+  },
+  "tricou": {
+   "ro": "tricou",
+   "en": "T-shirt",
+   "emoji": "👕",
+   "g": "n",
+   "pl": "tricouri",
+   "def": "tricoul",
+   "defPl": "tricourile",
+   "count": true,
+   "entry": "un tricou, două tricouri",
+   "ask": "Unde este tricoul?",
+   "a": {
+    "w": "c0feeac18fa49687",
+    "e": "c33f4d93418e1fae",
+    "q": "150d09008c4b8635"
+   }
+  },
+  "rochie": {
+   "ro": "rochie",
+   "en": "dress",
+   "emoji": "👗",
+   "g": "f",
+   "pl": "rochii",
+   "def": "rochia",
+   "defPl": "rochiile",
+   "count": true,
+   "entry": "o rochie, două rochii",
+   "ask": "Unde este rochia?",
+   "a": {
+    "w": "2816717a9a76c379",
+    "e": "e1aca8738379261e",
+    "q": "07cbe26a392373c4"
+   }
+  },
+  "pantalon": {
+   "ro": "pantalon",
+   "en": "pants",
+   "emoji": "👖",
+   "g": "m",
+   "pl": "pantaloni",
+   "def": "pantalonul",
+   "defPl": "pantalonii",
+   "count": true,
+   "entry": "un pantalon, doi pantaloni",
+   "ask": "Unde este pantalonul?",
+   "a": {
+    "w": "ee98e209cb157118",
+    "e": "59e76b97700df4b5",
+    "q": "28718f6970b29dc6"
+   }
+  },
+  "pantof": {
+   "ro": "pantof",
+   "en": "shoe",
+   "emoji": "👞",
+   "g": "m",
+   "pl": "pantofi",
+   "def": "pantoful",
+   "defPl": "pantofii",
+   "count": true,
+   "entry": "un pantof, doi pantofi",
+   "ask": "Unde este pantoful?",
+   "a": {
+    "w": "fd893031131b5fb3",
+    "e": "42b529574bf45cc5",
+    "q": "77dfb897b2c90ce4"
+   }
+  },
+  "cizmă": {
+   "ro": "cizmă",
+   "en": "boot",
+   "emoji": "👢",
+   "g": "f",
+   "pl": "cizme",
+   "def": "cizma",
+   "defPl": "cizmele",
+   "count": true,
+   "entry": "o cizmă, două cizme",
+   "ask": "Unde este cizma?",
+   "a": {
+    "w": "25192da87b664a46",
+    "e": "3c16dd11f11bd04a",
+    "q": "02ba877c3f0f60af"
+   }
+  },
+  "șosetă": {
+   "ro": "șosetă",
+   "en": "sock",
+   "emoji": "🧦",
+   "g": "f",
+   "pl": "șosete",
+   "def": "șoseta",
+   "defPl": "șosetele",
+   "count": true,
+   "entry": "o șosetă, două șosete",
+   "ask": "Unde este șoseta?",
+   "a": {
+    "w": "f789e99909cface0",
+    "e": "805c3ce2e1d5ae1d",
+    "q": "c3eb0ca9c029f1c1"
+   }
+  },
+  "mănușă": {
+   "ro": "mănușă",
+   "en": "glove",
+   "emoji": "🧤",
+   "g": "f",
+   "pl": "mănuși",
+   "def": "mănușa",
+   "defPl": "mănușile",
+   "count": true,
+   "entry": "o mănușă, două mănuși",
+   "ask": "Unde este mănușa?",
+   "a": {
+    "w": "6bf3cd600d6daf95",
+    "e": "c503445f67437afa",
+    "q": "060fc1d8973cb7eb"
+   }
+  },
+  "pălărie": {
+   "ro": "pălărie",
+   "en": "hat",
+   "emoji": "👒",
+   "g": "f",
+   "pl": "pălării",
+   "def": "pălăria",
+   "defPl": "pălăriile",
+   "count": true,
+   "entry": "o pălărie, două pălării",
+   "ask": "Unde este pălăria?",
+   "a": {
+    "w": "41fcaded58240937",
+    "e": "4315c2c826a9d8a2",
+    "q": "9f679b04ebc5b653"
+   }
+  },
+  "șapcă": {
+   "ro": "șapcă",
+   "en": "cap",
+   "emoji": "🧢",
+   "g": "f",
+   "pl": "șepci",
+   "def": "șapca",
+   "defPl": "șepcile",
+   "count": true,
+   "entry": "o șapcă, două șepci",
+   "ask": "Unde este șapca?",
+   "a": {
+    "w": "f287a392c45f0744",
+    "e": "38702c7ee1272aca",
+    "q": "00104d0ff4ba5d5d"
+   }
+  },
+  "fular": {
+   "ro": "fular",
+   "en": "scarf",
+   "emoji": "🧣",
+   "g": "n",
+   "pl": "fulare",
+   "def": "fularul",
+   "defPl": "fularele",
+   "count": true,
+   "entry": "un fular, două fulare",
+   "ask": "Unde este fularul?",
+   "a": {
+    "w": "2437015be985e62a",
+    "e": "a1a3748f8057d284",
+    "q": "b41d9c9da6705009"
+   }
+  },
+  "haină": {
+   "ro": "haină",
+   "en": "coat",
+   "emoji": "🧥",
+   "g": "f",
+   "pl": "haine",
+   "def": "haina",
+   "defPl": "hainele",
+   "count": true,
+   "entry": "o haină, două haine",
+   "ask": "Unde este haina?",
+   "a": {
+    "w": "34068034eceac151",
+    "e": "204151efb0c5651b",
+    "q": "668732f9407b4647"
+   }
+  },
+  "ochi": {
+   "ro": "ochi",
+   "en": "eye",
+   "emoji": "👁️",
+   "g": "m",
+   "pl": "ochi",
+   "def": "ochiul",
+   "defPl": "ochii",
+   "count": true,
+   "entry": "un ochi, doi ochi",
+   "ask": "Unde este ochiul?",
+   "a": {
+    "w": "598af602ec793f53",
+    "e": "a676891fcdeefe6c",
+    "q": "6c2f033b111c301f"
+   }
+  },
+  "nas": {
+   "ro": "nas",
+   "en": "nose",
+   "emoji": "👃",
+   "g": "n",
+   "pl": "nasuri",
+   "def": "nasul",
+   "defPl": "nasurile",
+   "count": true,
+   "entry": "un nas, două nasuri",
+   "ask": "Unde este nasul?",
+   "a": {
+    "w": "2b9ca25a4a85cc1b",
+    "e": "750875b23202483a",
+    "q": "c97e4ff68065fb4c"
+   }
+  },
+  "gură": {
+   "ro": "gură",
+   "en": "mouth",
+   "emoji": "👄",
+   "g": "f",
+   "pl": "guri",
+   "def": "gura",
+   "defPl": "gurile",
+   "count": true,
+   "entry": "o gură, două guri",
+   "ask": "Unde este gura?",
+   "a": {
+    "w": "f7c5ce3095f15f9c",
+    "e": "b7ec275ecbf8b13a",
+    "q": "e5dc6f8061678c12"
+   }
+  },
+  "ureche": {
+   "ro": "ureche",
+   "en": "ear",
+   "emoji": "👂",
+   "g": "f",
+   "pl": "urechi",
+   "def": "urechea",
+   "defPl": "urechile",
+   "count": true,
+   "entry": "o ureche, două urechi",
+   "ask": "Unde este urechea?",
+   "a": {
+    "w": "7fb6d09453d63ad5",
+    "e": "bca5b56da20a94d5",
+    "q": "ecf1f6110497e433"
+   }
+  },
+  "mână": {
+   "ro": "mână",
+   "en": "hand",
+   "emoji": "✋",
+   "g": "f",
+   "pl": "mâini",
+   "def": "mâna",
+   "defPl": "mâinile",
+   "count": true,
+   "entry": "o mână, două mâini",
+   "ask": "Unde este mâna?",
+   "a": {
+    "w": "3d37710eed45a40b",
+    "e": "cc71d373c26dd2ed",
+    "q": "d7b2fb15244f5c80"
+   }
+  },
+  "picior": {
+   "ro": "picior",
+   "en": "leg",
+   "emoji": "🦵",
+   "g": "n",
+   "pl": "picioare",
+   "def": "piciorul",
+   "defPl": "picioarele",
+   "count": true,
+   "entry": "un picior, două picioare",
+   "ask": "Unde este piciorul?",
+   "a": {
+    "w": "26c3a070951a6253",
+    "e": "8289586bfa50345f",
+    "q": "cbf5773cdef9d269"
+   }
+  },
+  "dinte": {
+   "ro": "dinte",
+   "en": "tooth",
+   "emoji": "🦷",
+   "g": "m",
+   "pl": "dinți",
+   "def": "dintele",
+   "defPl": "dinții",
+   "count": true,
+   "entry": "un dinte, doi dinți",
+   "ask": "Unde este dintele?",
+   "a": {
+    "w": "d6b89629346620da",
+    "e": "3309e25e6355ec8c",
+    "q": "542e4037d02cd3f1"
+   }
+  },
+  "inimă": {
+   "ro": "inimă",
+   "en": "heart",
+   "emoji": "❤️",
+   "g": "f",
+   "pl": "inimi",
+   "def": "inima",
+   "defPl": "inimile",
+   "count": true,
+   "entry": "o inimă, două inimi",
+   "ask": "Unde este inima?",
+   "a": {
+    "w": "2f94fcd208c8b8d4",
+    "e": "e4c55b7ad394f380",
+    "q": "1e81a859daec73b4"
+   }
+  },
+  "os": {
+   "ro": "os",
+   "en": "bone",
+   "emoji": "🦴",
+   "g": "n",
+   "pl": "oase",
+   "def": "osul",
+   "defPl": "oasele",
+   "count": true,
+   "entry": "un os, două oase",
+   "ask": "Unde este osul?",
+   "a": {
+    "w": "eb1a9bab6ef546c3",
+    "e": "8c3c764df1194fd3",
+    "q": "82751f6fcb3b5b4a"
+   }
+  },
+  "braț": {
+   "ro": "braț",
+   "en": "arm",
+   "emoji": "💪",
+   "g": "n",
+   "pl": "brațe",
+   "def": "brațul",
+   "defPl": "brațele",
+   "count": true,
+   "entry": "un braț, două brațe",
+   "ask": "Unde este brațul?",
+   "a": {
+    "w": "f9806f90fe099172",
+    "e": "5d0284c7a323eeb4",
+    "q": "7dbd7b1401a4a689"
+   }
+  },
+  "deget": {
+   "ro": "deget",
+   "en": "finger",
+   "emoji": "☝️",
+   "g": "n",
+   "pl": "degete",
+   "def": "degetul",
+   "defPl": "degetele",
+   "count": true,
+   "entry": "un deget, două degete",
+   "ask": "Unde este degetul?",
+   "a": {
+    "w": "5318042985c27723",
+    "e": "241068bd72e4ff28",
+    "q": "8c903ed0ba5e26fd"
+   }
+  },
+  "limbă": {
+   "ro": "limbă",
+   "en": "tongue",
+   "emoji": "👅",
+   "g": "f",
+   "pl": "limbi",
+   "def": "limba",
+   "defPl": "limbile",
+   "count": true,
+   "entry": "o limbă, două limbi",
+   "ask": "Unde este limba?",
+   "a": {
+    "w": "ec559c8c4cdf6ad2",
+    "e": "cb9dd905a4275e7d",
+    "q": "19957eb87f52e79b"
+   }
+  },
+  "bărbat": {
+   "ro": "bărbat",
+   "en": "man",
+   "emoji": "👨",
+   "g": "m",
+   "pl": "bărbați",
+   "def": "bărbatul",
+   "defPl": "bărbații",
+   "count": true,
+   "entry": "un bărbat, doi bărbați",
+   "ask": "Unde este bărbatul?",
+   "a": {
+    "w": "bbe97cb164bbd11e",
+    "e": "f375196fb17f9ea5",
+    "q": "bfb4e7476d86e83b"
+   }
+  },
+  "femeie": {
+   "ro": "femeie",
+   "en": "woman",
+   "emoji": "👩",
+   "g": "f",
+   "pl": "femei",
+   "def": "femeia",
+   "defPl": "femeile",
+   "count": true,
+   "entry": "o femeie, două femei",
+   "ask": "Unde este femeia?",
+   "a": {
+    "w": "82d4003234c949f5",
+    "e": "4b03080a2162f4c8",
+    "q": "8eb8bb0bc3b0ba18"
+   }
+  },
+  "băiat": {
+   "ro": "băiat",
+   "en": "boy",
+   "emoji": "👦",
+   "g": "m",
+   "pl": "băieți",
+   "def": "băiatul",
+   "defPl": "băieții",
+   "count": true,
+   "entry": "un băiat, doi băieți",
+   "ask": "Unde este băiatul?",
+   "a": {
+    "w": "072fe75d5d6ba27c",
+    "e": "6f8ab4235ed6925d",
+    "q": "d902f8ae2ac0d803"
+   }
+  },
+  "fată": {
+   "ro": "fată",
+   "en": "girl",
+   "emoji": "👧",
+   "g": "f",
+   "pl": "fete",
+   "def": "fata",
+   "defPl": "fetele",
+   "count": true,
+   "entry": "o fată, două fete",
+   "ask": "Unde este fata?",
+   "a": {
+    "w": "e6d3e9fcaa7c755b",
+    "e": "3fcf57d227c1ef63",
+    "q": "47a6d0c6e8e39358"
+   }
+  },
+  "copil": {
+   "ro": "copil",
+   "en": "child",
+   "emoji": "🧒",
+   "g": "m",
+   "pl": "copii",
+   "def": "copilul",
+   "defPl": "copiii",
+   "count": true,
+   "entry": "un copil, doi copii",
+   "ask": "Unde este copilul?",
+   "a": {
+    "w": "41ce59bd8c263ef2",
+    "e": "92708d0f2115eab0",
+    "q": "87ad96d859fdf87f"
+   }
+  },
+  "bunic": {
+   "ro": "bunic",
+   "en": "grandfather",
+   "emoji": "👴",
+   "g": "m",
+   "pl": "bunici",
+   "def": "bunicul",
+   "defPl": "bunicii",
+   "count": true,
+   "entry": "un bunic, doi bunici",
+   "ask": "Unde este bunicul?",
+   "a": {
+    "w": "0ddabe7e6d5ba5cf",
+    "e": "7327a74fc449e7c9",
+    "q": "803270aad2597c3e"
+   }
+  },
+  "bunică": {
+   "ro": "bunică",
+   "en": "grandmother",
+   "emoji": "👵",
+   "g": "f",
+   "pl": "bunici",
+   "def": "bunica",
+   "defPl": "bunicile",
+   "count": true,
+   "entry": "o bunică, două bunici",
+   "ask": "Unde este bunica?",
+   "a": {
+    "w": "b228bd60caae0fbb",
+    "e": "91dd1375e74501b5",
+    "q": "2dc0c7fb49bdd303"
+   }
+  },
+  "rege": {
+   "ro": "rege",
+   "en": "king",
+   "emoji": "🤴",
+   "g": "m",
+   "pl": "regi",
+   "def": "regele",
+   "defPl": "regii",
+   "count": true,
+   "entry": "un rege, doi regi",
+   "ask": "Unde este regele?",
+   "a": {
+    "w": "4c695ba02eb3cb60",
+    "e": "48ab4d48e2422f0b",
+    "q": "bfa85faf1a258b60"
+   }
+  },
+  "regină": {
+   "ro": "regină",
+   "en": "queen",
+   "emoji": "👸",
+   "g": "f",
+   "pl": "regine",
+   "def": "regina",
+   "defPl": "reginele",
+   "count": true,
+   "entry": "o regină, două regine",
+   "ask": "Unde este regina?",
+   "a": {
+    "w": "fce3cebfc7d60b7d",
+    "e": "64dc4e818d1b838d",
+    "q": "d0cee840c019f23f"
+   }
+  },
+  "mire": {
+   "ro": "mire",
+   "en": "groom",
+   "emoji": "🤵",
+   "g": "m",
+   "pl": "miri",
+   "def": "mirele",
+   "defPl": "mirii",
+   "count": true,
+   "entry": "un mire, doi miri",
+   "ask": "Unde este mirele?",
+   "a": {
+    "w": "838b573b5b2fd06d",
+    "e": "74e7ac16d42d6c00",
+    "q": "07c2abc5d642b107"
+   }
+  },
+  "mireasă": {
+   "ro": "mireasă",
+   "en": "bride",
+   "emoji": "👰",
+   "g": "f",
+   "pl": "mirese",
+   "def": "mireasa",
+   "defPl": "miresele",
+   "count": true,
+   "entry": "o mireasă, două mirese",
+   "ask": "Unde este mireasa?",
+   "a": {
+    "w": "5e0fde2c9a12cf0c",
+    "e": "fe488dbaea1aa8f2",
+    "q": "a7b510be3797772c"
+   }
+  },
+  "familie": {
+   "ro": "familie",
+   "en": "family",
+   "emoji": "👪",
+   "g": "f",
+   "pl": "familii",
+   "def": "familia",
+   "defPl": "familiile",
+   "count": true,
+   "entry": "o familie, două familii",
+   "ask": "Unde este familia?",
+   "a": {
+    "w": "5931b4238b1b8d55",
+    "e": "7ddc393e5961046d",
+    "q": "0fe242ab31df20ee"
+   }
+  },
+  "polițist": {
+   "ro": "polițist",
+   "en": "police officer",
+   "emoji": "👮",
+   "g": "m",
+   "pl": "polițiști",
+   "def": "polițistul",
+   "defPl": "polițiștii",
+   "count": true,
+   "entry": "un polițist, doi polițiști",
+   "ask": "Unde este polițistul?",
+   "a": {
+    "w": "3ea7c090706c3521",
+    "e": "5b7c59ad89b10e31",
+    "q": "ff21e8dc192e4e18"
+   }
+  },
+  "medic": {
+   "ro": "medic",
+   "en": "doctor",
+   "emoji": "👨‍⚕️",
+   "g": "m",
+   "pl": "medici",
+   "def": "medicul",
+   "defPl": "medicii",
+   "count": true,
+   "entry": "un medic, doi medici",
+   "ask": "Unde este medicul?",
+   "a": {
+    "w": "15a18c12c4fb8311",
+    "e": "c5efcc30fc76577a",
+    "q": "63d16a34d26d6897"
+   }
+  },
+  "bucătar": {
+   "ro": "bucătar",
+   "en": "cook",
+   "emoji": "👨‍🍳",
+   "g": "m",
+   "pl": "bucătari",
+   "def": "bucătarul",
+   "defPl": "bucătarii",
+   "count": true,
+   "entry": "un bucătar, doi bucătari",
+   "ask": "Unde este bucătarul?",
+   "a": {
+    "w": "1c94a9e36fc185e5",
+    "e": "e90dfedb5eea6bc7",
+    "q": "3b5a2e6f658822ef"
+   }
+  },
+  "profesor": {
+   "ro": "profesor",
+   "en": "teacher",
+   "emoji": "👨‍🏫",
+   "g": "m",
+   "pl": "profesori",
+   "def": "profesorul",
+   "defPl": "profesorii",
+   "count": true,
+   "entry": "un profesor, doi profesori",
+   "ask": "Unde este profesorul?",
+   "a": {
+    "w": "b6fd2131e78bf93a",
+    "e": "82d1a7cd2663bcad",
+    "q": "18f7c96f40bb2ab9"
+   }
+  },
+  "student": {
+   "ro": "student",
+   "en": "student",
+   "emoji": "👨‍🎓",
+   "g": "m",
+   "pl": "studenți",
+   "def": "studentul",
+   "defPl": "studenții",
+   "count": true,
+   "entry": "un student, doi studenți",
+   "ask": "Unde este studentul?",
+   "a": {
+    "w": "dda79bb3ccbd30f8",
+    "e": "9241f3ac8afcbeeb",
+    "q": "2857187f6096b68e"
+   }
+  },
+  "pictor": {
+   "ro": "pictor",
+   "en": "painter",
+   "emoji": "👨‍🎨",
+   "g": "m",
+   "pl": "pictori",
+   "def": "pictorul",
+   "defPl": "pictorii",
+   "count": true,
+   "entry": "un pictor, doi pictori",
+   "ask": "Unde este pictorul?",
+   "a": {
+    "w": "bc81ceef037858f0",
+    "e": "b22288f82d6d3b16",
+    "q": "287541385dbe8ca2"
+   }
+  },
+  "cântăreț": {
+   "ro": "cântăreț",
+   "en": "singer",
+   "emoji": "👨‍🎤",
+   "g": "m",
+   "pl": "cântăreți",
+   "def": "cântărețul",
+   "defPl": "cântăreții",
+   "count": true,
+   "entry": "un cântăreț, doi cântăreți",
+   "ask": "Unde este cântărețul?",
+   "a": {
+    "w": "fc55552485a2ba96",
+    "e": "c8d2c45fd5490a46",
+    "q": "240e3364b9db4d49"
+   }
+  },
+  "țăran": {
+   "ro": "țăran",
+   "en": "farmer",
+   "emoji": "👨‍🌾",
+   "g": "m",
+   "pl": "țărani",
+   "def": "țăranul",
+   "defPl": "țăranii",
+   "count": true,
+   "entry": "un țăran, doi țărani",
+   "ask": "Unde este țăranul?",
+   "a": {
+    "w": "2b42539dfeb376bc",
+    "e": "5684b0784787b2e3",
+    "q": "47deb56c05883a49"
+   }
+  },
+  "mașină": {
+   "ro": "mașină",
+   "en": "car",
+   "emoji": "🚗",
+   "g": "f",
+   "pl": "mașini",
+   "def": "mașina",
+   "defPl": "mașinile",
+   "count": true,
+   "entry": "o mașină, două mașini",
+   "ask": "Unde este mașina?",
+   "a": {
+    "w": "0e6c369a521a86ad",
+    "e": "f2b0e613a9178766",
+    "q": "3569962b3337d5ee"
+   }
+  },
+  "tren": {
+   "ro": "tren",
+   "en": "train",
+   "emoji": "🚆",
+   "g": "n",
+   "pl": "trenuri",
+   "def": "trenul",
+   "defPl": "trenurile",
+   "count": true,
+   "entry": "un tren, două trenuri",
+   "ask": "Unde este trenul?",
+   "a": {
+    "w": "dd169435011ec8dd",
+    "e": "4e6243858f1a5d29",
+    "q": "c26bb994c5234645"
+   }
+  },
+  "avion": {
+   "ro": "avion",
+   "en": "airplane",
+   "emoji": "✈️",
+   "g": "n",
+   "pl": "avioane",
+   "def": "avionul",
+   "defPl": "avioanele",
+   "count": true,
+   "entry": "un avion, două avioane",
+   "ask": "Unde este avionul?",
+   "a": {
+    "w": "db3c20343680801d",
+    "e": "42a4f558c3fdcb2a",
+    "q": "e2e953fe07d6ebe4"
+   }
+  },
+  "autobuz": {
+   "ro": "autobuz",
+   "en": "bus",
+   "emoji": "🚌",
+   "g": "n",
+   "pl": "autobuze",
+   "def": "autobuzul",
+   "defPl": "autobuzele",
+   "count": true,
+   "entry": "un autobuz, două autobuze",
+   "ask": "Unde este autobuzul?",
+   "a": {
+    "w": "0b8c3a5317404bed",
+    "e": "eb46c272039adb29",
+    "q": "4824d062b2ca3183"
+   }
+  },
+  "taxi": {
+   "ro": "taxi",
+   "en": "taxi",
+   "emoji": "🚕",
+   "g": "n",
+   "pl": "taxiuri",
+   "def": "taxiul",
+   "defPl": "taxiurile",
+   "count": true,
+   "entry": "un taxi, două taxiuri",
+   "ask": "Unde este taxiul?",
+   "a": {
+    "w": "05792951619a8c97",
+    "e": "314965b093cc41cb",
+    "q": "69135276d9bd0a2b"
+   }
+  },
+  "barcă": {
+   "ro": "barcă",
+   "en": "boat",
+   "emoji": "⛵",
+   "g": "f",
+   "pl": "bărci",
+   "def": "barca",
+   "defPl": "bărcile",
+   "count": true,
+   "entry": "o barcă, două bărci",
+   "ask": "Unde este barca?",
+   "a": {
+    "w": "a119040f24fd6f32",
+    "e": "7b257f3fb133b8c2",
+    "q": "10e694e97475df1f"
+   }
+  },
+  "vapor": {
+   "ro": "vapor",
+   "en": "ship",
+   "emoji": "🚢",
+   "g": "n",
+   "pl": "vapoare",
+   "def": "vaporul",
+   "defPl": "vapoarele",
+   "count": true,
+   "entry": "un vapor, două vapoare",
+   "ask": "Unde este vaporul?",
+   "a": {
+    "w": "d6caa162896247ec",
+    "e": "54374a309fa7a48e",
+    "q": "17291e9e699cf6dc"
+   }
+  },
+  "bicicletă": {
+   "ro": "bicicletă",
+   "en": "bicycle",
+   "emoji": "🚲",
+   "g": "f",
+   "pl": "biciclete",
+   "def": "bicicleta",
+   "defPl": "bicicletele",
+   "count": true,
+   "entry": "o bicicletă, două biciclete",
+   "ask": "Unde este bicicleta?",
+   "a": {
+    "w": "8d1e1ec41468eb57",
+    "e": "8975080b71027d72",
+    "q": "2d4757fa3a382bc7"
+   }
+  },
+  "rachetă": {
+   "ro": "rachetă",
+   "en": "rocket",
+   "emoji": "🚀",
+   "g": "f",
+   "pl": "rachete",
+   "def": "racheta",
+   "defPl": "rachetele",
+   "count": true,
+   "entry": "o rachetă, două rachete",
+   "ask": "Unde este racheta?",
+   "a": {
+    "w": "babea224d596e547",
+    "e": "f40f685f3e311739",
+    "q": "26af17cabad13469"
+   }
+  },
+  "elicopter": {
+   "ro": "elicopter",
+   "en": "helicopter",
+   "emoji": "🚁",
+   "g": "n",
+   "pl": "elicoptere",
+   "def": "elicopterul",
+   "defPl": "elicopterele",
+   "count": true,
+   "entry": "un elicopter, două elicoptere",
+   "ask": "Unde este elicopterul?",
+   "a": {
+    "w": "46d6fafb9120d663",
+    "e": "2446d21b9d2061ff",
+    "q": "82297fe7b1ed8d73"
+   }
+  },
+  "camion": {
+   "ro": "camion",
+   "en": "truck",
+   "emoji": "🚚",
+   "g": "n",
+   "pl": "camioane",
+   "def": "camionul",
+   "defPl": "camioanele",
+   "count": true,
+   "entry": "un camion, două camioane",
+   "ask": "Unde este camionul?",
+   "a": {
+    "w": "178898cf42fc9aa6",
+    "e": "6e0f7251e87c277b",
+    "q": "3ebd01eb5d62f55a"
+   }
+  },
+  "sanie": {
+   "ro": "sanie",
+   "en": "sled",
+   "emoji": "🛷",
+   "g": "f",
+   "pl": "sănii",
+   "def": "sania",
+   "defPl": "săniile",
+   "count": true,
+   "entry": "o sanie, două sănii",
+   "ask": "Unde este sania?",
+   "a": {
+    "w": "442e9e41b1b52534",
+    "e": "9a29b688aae93762",
+    "q": "40ee73f38adfff57"
+   }
+  },
+  "oraș": {
+   "ro": "oraș",
+   "en": "city",
+   "emoji": "🏙️",
+   "g": "n",
+   "pl": "orașe",
+   "def": "orașul",
+   "defPl": "orașele",
+   "count": true,
+   "entry": "un oraș, două orașe",
+   "ask": "Unde este orașul?",
+   "a": {
+    "w": "360e710c74997297",
+    "e": "cc85727c9ab9fc59",
+    "q": "4a530482c7bce49d"
+   }
+  },
+  "școală": {
+   "ro": "școală",
+   "en": "school",
+   "emoji": "🏫",
+   "g": "f",
+   "pl": "școli",
+   "def": "școala",
+   "defPl": "școlile",
+   "count": true,
+   "entry": "o școală, două școli",
+   "ask": "Unde este școala?",
+   "a": {
+    "w": "4460246b50da658c",
+    "e": "384b78c3c5d4d579",
+    "q": "b48a7e1a679fba5b"
+   }
+  },
+  "spital": {
+   "ro": "spital",
+   "en": "hospital",
+   "emoji": "🏥",
+   "g": "n",
+   "pl": "spitale",
+   "def": "spitalul",
+   "defPl": "spitalele",
+   "count": true,
+   "entry": "un spital, două spitale",
+   "ask": "Unde este spitalul?",
+   "a": {
+    "w": "519ef0812b015da6",
+    "e": "05c5d525cd13e2ed",
+    "q": "9dced565fcfc2949"
+   }
+  },
+  "biserică": {
+   "ro": "biserică",
+   "en": "church",
+   "emoji": "⛪",
+   "g": "f",
+   "pl": "biserici",
+   "def": "biserica",
+   "defPl": "bisericile",
+   "count": true,
+   "entry": "o biserică, două biserici",
+   "ask": "Unde este biserica?",
+   "a": {
+    "w": "fda67f1cb7cdf290",
+    "e": "e321d9803f3bb16d",
+    "q": "f65af77ff26604af"
+   }
+  },
+  "bancă": {
+   "ro": "bancă",
+   "en": "bank",
+   "emoji": "🏦",
+   "g": "f",
+   "pl": "bănci",
+   "def": "banca",
+   "defPl": "băncile",
+   "count": true,
+   "entry": "o bancă, două bănci",
+   "ask": "Unde este banca?",
+   "a": {
+    "w": "6f07ed47af89c6ab",
+    "e": "c5fdc2675915ebf8",
+    "q": "e43bf1a29026666d"
+   }
+  },
+  "magazin": {
+   "ro": "magazin",
+   "en": "store",
+   "emoji": "🏪",
+   "g": "n",
+   "pl": "magazine",
+   "def": "magazinul",
+   "defPl": "magazinele",
+   "count": true,
+   "entry": "un magazin, două magazine",
+   "ask": "Unde este magazinul?",
+   "a": {
+    "w": "56ca34007b365f83",
+    "e": "ff645cd6d16044bd",
+    "q": "affc2a0a1f47d35b"
+   }
+  },
+  "muzeu": {
+   "ro": "muzeu",
+   "en": "museum",
+   "emoji": "🏛️",
+   "g": "n",
+   "pl": "muzee",
+   "def": "muzeul",
+   "defPl": "muzeele",
+   "count": true,
+   "entry": "un muzeu, două muzee",
+   "ask": "Unde este muzeul?",
+   "a": {
+    "w": "b2e51303eaada9b7",
+    "e": "b7452a1dcf9ded13",
+    "q": "2fac18012b315087"
+   }
+  },
+  "fabrică": {
+   "ro": "fabrică",
+   "en": "factory",
+   "emoji": "🏭",
+   "g": "f",
+   "pl": "fabrici",
+   "def": "fabrica",
+   "defPl": "fabricile",
+   "count": true,
+   "entry": "o fabrică, două fabrici",
+   "ask": "Unde este fabrica?",
+   "a": {
+    "w": "ad0b16d38bc34941",
+    "e": "c035498359611b41",
+    "q": "3cea9979116a9171"
+   }
+  },
+  "poștă": {
+   "ro": "poștă",
+   "en": "post office",
+   "emoji": "🏤",
+   "g": "f",
+   "pl": "poște",
+   "def": "poșta",
+   "defPl": "poștele",
+   "count": true,
+   "entry": "o poștă, două poște",
+   "ask": "Unde este poșta?",
+   "a": {
+    "w": "584fcf9654e3ad81",
+    "e": "360153e9e6e54dc0",
+    "q": "b901eb63e248de75"
+   }
+  },
+  "bloc": {
+   "ro": "bloc",
+   "en": "apartment building",
+   "emoji": "🏢",
+   "g": "n",
+   "pl": "blocuri",
+   "def": "blocul",
+   "defPl": "blocurile",
+   "count": true,
+   "entry": "un bloc, două blocuri",
+   "ask": "Unde este blocul?",
+   "a": {
+    "w": "bcd477b287d65d01",
+    "e": "79344e4a7341f6cb",
+    "q": "dd7c1bee73312310"
+   }
+  },
+  "hotel": {
+   "ro": "hotel",
+   "en": "hotel",
+   "emoji": "🏨",
+   "g": "n",
+   "pl": "hoteluri",
+   "def": "hotelul",
+   "defPl": "hotelurile",
+   "count": true,
+   "entry": "un hotel, două hoteluri",
+   "ask": "Unde este hotelul?",
+   "a": {
+    "w": "e6f94efb6c0ac15b",
+    "e": "2f08b94ad607b7b5",
+    "q": "f1d9a54c684ce3b5"
+   }
+  },
+  "castel": {
+   "ro": "castel",
+   "en": "castle",
+   "emoji": "🏰",
+   "g": "n",
+   "pl": "castele",
+   "def": "castelul",
+   "defPl": "castelele",
+   "count": true,
+   "entry": "un castel, două castele",
+   "ask": "Unde este castelul?",
+   "a": {
+    "w": "7eefbd3579664e8a",
+    "e": "3d637fcfb54d7d96",
+    "q": "4031508bd6edee58"
+   }
+  },
+  "drum": {
+   "ro": "drum",
+   "en": "road",
+   "emoji": "🛣️",
+   "g": "n",
+   "pl": "drumuri",
+   "def": "drumul",
+   "defPl": "drumurile",
+   "count": true,
+   "entry": "un drum, două drumuri",
+   "ask": "Unde este drumul?",
+   "a": {
+    "w": "c66ff4e8eb7a7561",
+    "e": "dd74568ef173dd2b",
+    "q": "0b7e15313a0741f7"
+   }
+  },
+  "pod": {
+   "ro": "pod",
+   "en": "bridge",
+   "emoji": "🌉",
+   "g": "n",
+   "pl": "poduri",
+   "def": "podul",
+   "defPl": "podurile",
+   "count": true,
+   "entry": "un pod, două poduri",
+   "ask": "Unde este podul?",
+   "a": {
+    "w": "671eec03eb7b2dc3",
+    "e": "fdea4e7e2bc6a6fa",
+    "q": "bbd6600cf11d068b"
+   }
+  },
+  "gară": {
+   "ro": "gară",
+   "en": "train station",
+   "emoji": "🚉",
+   "g": "f",
+   "pl": "gări",
+   "def": "gara",
+   "defPl": "gările",
+   "count": true,
+   "entry": "o gară, două gări",
+   "ask": "Unde este gara?",
+   "a": {
+    "w": "7f1cdb8483a9a957",
+    "e": "55120e54fe0e3821",
+    "q": "a511abf53d6c565f"
+   }
+  },
+  "bilet": {
+   "ro": "bilet",
+   "en": "ticket",
+   "emoji": "🎫",
+   "g": "n",
+   "pl": "bilete",
+   "def": "biletul",
+   "defPl": "biletele",
+   "count": true,
+   "entry": "un bilet, două bilete",
+   "ask": "Unde este biletul?",
+   "a": {
+    "w": "3531fbaef2843d14",
+    "e": "97d7915d8ab10c87",
+    "q": "db360e467d971804"
+   }
+  },
+  "hartă": {
+   "ro": "hartă",
+   "en": "map",
+   "emoji": "🗺️",
+   "g": "f",
+   "pl": "hărți",
+   "def": "harta",
+   "defPl": "hărțile",
+   "count": true,
+   "entry": "o hartă, două hărți",
+   "ask": "Unde este harta?",
+   "a": {
+    "w": "92bc95414fbe0ba4",
+    "e": "4f72cd7cdfa4c9b7",
+    "q": "1c6e3c2068608277"
+   }
+  },
+  "bagaj": {
+   "ro": "bagaj",
+   "en": "luggage",
+   "emoji": "🧳",
+   "g": "n",
+   "pl": "bagaje",
+   "def": "bagajul",
+   "defPl": "bagajele",
+   "count": true,
+   "entry": "un bagaj, două bagaje",
+   "ask": "Unde este bagajul?",
+   "a": {
+    "w": "42af3086d115bea8",
+    "e": "ac4fa9fba69a087d",
+    "q": "7f7b5b712c4c51df"
+   }
+  },
+  "cort": {
+   "ro": "cort",
+   "en": "tent",
+   "emoji": "⛺",
+   "g": "n",
+   "pl": "corturi",
+   "def": "cortul",
+   "defPl": "corturile",
+   "count": true,
+   "entry": "un cort, două corturi",
+   "ask": "Unde este cortul?",
+   "a": {
+    "w": "0421c90c88998636",
+    "e": "349fdb07bf7c77fc",
+    "q": "89cffba4aa434be3"
+   }
+  },
+  "statuie": {
+   "ro": "statuie",
+   "en": "statue",
+   "emoji": "🗽",
+   "g": "f",
+   "pl": "statui",
+   "def": "statuia",
+   "defPl": "statuile",
+   "count": true,
+   "entry": "o statuie, două statui",
+   "ask": "Unde este statuia?",
+   "a": {
+    "w": "0ba9db19033c70f3",
+    "e": "948ccfa815c1793d",
+    "q": "46314179ca4bd4c1"
+   }
+  },
+  "carte": {
+   "ro": "carte",
+   "en": "book",
+   "emoji": "📖",
+   "g": "f",
+   "pl": "cărți",
+   "def": "cartea",
+   "defPl": "cărțile",
+   "count": true,
+   "entry": "o carte, două cărți",
+   "ask": "Unde este cartea?",
+   "a": {
+    "w": "005bcc0e924203b2",
+    "e": "090d23f02e7dbe15",
+    "q": "20b6a6f4674ac18e"
+   }
+  },
+  "caiet": {
+   "ro": "caiet",
+   "en": "notebook",
+   "emoji": "📓",
+   "g": "n",
+   "pl": "caiete",
+   "def": "caietul",
+   "defPl": "caietele",
+   "count": true,
+   "entry": "un caiet, două caiete",
+   "ask": "Unde este caietul?",
+   "a": {
+    "w": "d18dc22747109782",
+    "e": "3949d1daf87f734a",
+    "q": "21934344876a3f48"
+   }
+  },
+  "creion": {
+   "ro": "creion",
+   "en": "pencil",
+   "emoji": "✏️",
+   "g": "n",
+   "pl": "creioane",
+   "def": "creionul",
+   "defPl": "creioanele",
+   "count": true,
+   "entry": "un creion, două creioane",
+   "ask": "Unde este creionul?",
+   "a": {
+    "w": "004793d36230f3cf",
+    "e": "41c99fba9a64cae7",
+    "q": "a47cb5351d4b402a"
+   }
+  },
+  "pix": {
+   "ro": "pix",
+   "en": "pen",
+   "emoji": "🖊️",
+   "g": "n",
+   "pl": "pixuri",
+   "def": "pixul",
+   "defPl": "pixurile",
+   "count": true,
+   "entry": "un pix, două pixuri",
+   "ask": "Unde este pixul?",
+   "a": {
+    "w": "64382f5ce5a962b5",
+    "e": "5f566df329386323",
+    "q": "093b1f048180084a"
+   }
+  },
+  "stilou": {
+   "ro": "stilou",
+   "en": "fountain pen",
+   "emoji": "🖋️",
+   "g": "n",
+   "pl": "stilouri",
+   "def": "stiloul",
+   "defPl": "stilourile",
+   "count": true,
+   "entry": "un stilou, două stilouri",
+   "ask": "Unde este stiloul?",
+   "a": {
+    "w": "a9303eab935e63cb",
+    "e": "ff2811f630b16a77",
+    "q": "d7eabaa52ae2b246"
+   }
+  },
+  "riglă": {
+   "ro": "riglă",
+   "en": "ruler",
+   "emoji": "📏",
+   "g": "f",
+   "pl": "rigle",
+   "def": "rigla",
+   "defPl": "riglele",
+   "count": true,
+   "entry": "o riglă, două rigle",
+   "ask": "Unde este rigla?",
+   "a": {
+    "w": "6c42f5dcc2fa8c2e",
+    "e": "ec585347022d0a0d",
+    "q": "2552d35676b7b233"
+   }
+  },
+  "ghiozdan": {
+   "ro": "ghiozdan",
+   "en": "schoolbag",
+   "emoji": "🎒",
+   "g": "n",
+   "pl": "ghiozdane",
+   "def": "ghiozdanul",
+   "defPl": "ghiozdanele",
+   "count": true,
+   "entry": "un ghiozdan, două ghiozdane",
+   "ask": "Unde este ghiozdanul?",
+   "a": {
+    "w": "124295ffd80b43c7",
+    "e": "baef1c04aa44aa11",
+    "q": "b4547ff8995a7f01"
+   }
+  },
+  "hârtie": {
+   "ro": "hârtie",
+   "en": "paper",
+   "emoji": "📄",
+   "g": "f",
+   "pl": "hârtii",
+   "def": "hârtia",
+   "defPl": "hârtiile",
+   "count": true,
+   "entry": "o hârtie, două hârtii",
+   "ask": "Unde este hârtia?",
+   "a": {
+    "w": "f046a075d0a63870",
+    "e": "864cbec25d1c433a",
+    "q": "9c7fd27486256fee"
+   }
+  },
+  "scrisoare": {
+   "ro": "scrisoare",
+   "en": "letter",
+   "emoji": "✉️",
+   "g": "f",
+   "pl": "scrisori",
+   "def": "scrisoarea",
+   "defPl": "scrisorile",
+   "count": true,
+   "entry": "o scrisoare, două scrisori",
+   "ask": "Unde este scrisoarea?",
+   "a": {
+    "w": "2f5c2a9af4cdb4cc",
+    "e": "16ac1cdba319187c",
+    "q": "093fe90e9002a59e"
+   }
+  },
+  "ziar": {
+   "ro": "ziar",
+   "en": "newspaper",
+   "emoji": "📰",
+   "g": "n",
+   "pl": "ziare",
+   "def": "ziarul",
+   "defPl": "ziarele",
+   "count": true,
+   "entry": "un ziar, două ziare",
+   "ask": "Unde este ziarul?",
+   "a": {
+    "w": "5a10382710daf5ea",
+    "e": "a2d18dea23f9550a",
+    "q": "09942a582ac7dfb2"
+   }
+  },
+  "pensulă": {
+   "ro": "pensulă",
+   "en": "paintbrush",
+   "emoji": "🖌️",
+   "g": "f",
+   "pl": "pensule",
+   "def": "pensula",
+   "defPl": "pensulele",
+   "count": true,
+   "entry": "o pensulă, două pensule",
+   "ask": "Unde este pensula?",
+   "a": {
+    "w": "a6cf1f2bc17e9c4c",
+    "e": "4d55c9698a7895dc",
+    "q": "c6530fe27db30733"
+   }
+  },
+  "agrafă": {
+   "ro": "agrafă",
+   "en": "paper clip",
+   "emoji": "📎",
+   "g": "f",
+   "pl": "agrafe",
+   "def": "agrafa",
+   "defPl": "agrafele",
+   "count": true,
+   "entry": "o agrafă, două agrafe",
+   "ask": "Unde este agrafa?",
+   "a": {
+    "w": "65ed24c672f1a2bf",
+    "e": "2403b9ef07a796c6",
+    "q": "1f0f54ddf54056bb"
+   }
+  },
+  "minge": {
+   "ro": "minge",
+   "en": "ball",
+   "emoji": "⚽",
+   "g": "f",
+   "pl": "mingi",
+   "def": "mingea",
+   "defPl": "mingile",
+   "count": true,
+   "entry": "o minge, două mingi",
+   "ask": "Unde este mingea?",
+   "a": {
+    "w": "766ed74230d97593",
+    "e": "90e5244271fce466",
+    "q": "a4f4da1dcbc64569"
+   }
+  },
+  "jucărie": {
+   "ro": "jucărie",
+   "en": "toy",
+   "emoji": "🧸",
+   "g": "f",
+   "pl": "jucării",
+   "def": "jucăria",
+   "defPl": "jucăriile",
+   "count": true,
+   "entry": "o jucărie, două jucării",
+   "ask": "Unde este jucăria?",
+   "a": {
+    "w": "c386b353d866e514",
+    "e": "2e3a213d9cd7bd21",
+    "q": "09cef4e327eb75ba"
+   }
+  },
+  "cântec": {
+   "ro": "cântec",
+   "en": "song",
+   "emoji": "🎵",
+   "g": "n",
+   "pl": "cântece",
+   "def": "cântecul",
+   "defPl": "cântecele",
+   "count": true,
+   "entry": "un cântec, două cântece",
+   "ask": "Unde este cântecul?",
+   "a": {
+    "w": "e3e28efab40c4c56",
+    "e": "08c8d43fffb08d44",
+    "q": "e0efcdf79b1ff59c"
+   }
+  },
+  "premiu": {
+   "ro": "premiu",
+   "en": "prize",
+   "emoji": "🏆",
+   "g": "n",
+   "pl": "premii",
+   "def": "premiul",
+   "defPl": "premiile",
+   "count": true,
+   "entry": "un premiu, două premii",
+   "ask": "Unde este premiul?",
+   "a": {
+    "w": "8dfecdf076bce872",
+    "e": "42c9c2b7ea1b7145",
+    "q": "bc758bdfd1fa189f"
+   }
+  },
+  "șah": {
+   "ro": "șah",
+   "en": "chess",
+   "emoji": "♟️",
+   "g": "n",
+   "pl": "șahi",
+   "def": "șahul",
+   "defPl": "șahii",
+   "count": false,
+   "ask": "Unde este șahul?",
+   "a": {
+    "w": "7903ba2940f47bfd",
+    "q": "94b288c24d23e110"
+   }
+  },
+  "tablou": {
+   "ro": "tablou",
+   "en": "painting",
+   "emoji": "🖼️",
+   "g": "n",
+   "pl": "tablouri",
+   "def": "tabloul",
+   "defPl": "tablourile",
+   "count": true,
+   "entry": "un tablou, două tablouri",
+   "ask": "Unde este tabloul?",
+   "a": {
+    "w": "7b9be1fa72679915",
+    "e": "4ccb15218eaff4e8",
+    "q": "b91a2b04d459dca9"
+   }
+  },
+  "cadou": {
+   "ro": "cadou",
+   "en": "gift",
+   "emoji": "🎁",
+   "g": "n",
+   "pl": "cadouri",
+   "def": "cadoul",
+   "defPl": "cadourile",
+   "count": true,
+   "entry": "un cadou, două cadouri",
+   "ask": "Unde este cadoul?",
+   "a": {
+    "w": "1c2c834be207131f",
+    "e": "4f583e708832b31b",
+    "q": "c01425b397dfc416"
+   }
+  },
+  "bani": {
+   "ro": "bani",
+   "en": "money",
+   "emoji": "💰",
+   "g": "m",
+   "pl": "bani",
+   "def": "banii",
+   "defPl": "banii",
+   "count": false,
+   "ask": "Unde sunt banii?",
+   "a": {
+    "w": "415efa62b9917aa5",
+    "q": "67563f0b36ad4cf7"
+   }
+  },
+  "petrecere": {
+   "ro": "petrecere",
+   "en": "party",
+   "emoji": "🎉",
+   "g": "f",
+   "pl": "petreceri",
+   "def": "petrecerea",
+   "defPl": "petrecerile",
+   "count": true,
+   "entry": "o petrecere, două petreceri",
+   "ask": "Unde este petrecerea?",
+   "a": {
+    "w": "598e828ed6742053",
+    "e": "9b0c60be447ecb14",
+    "q": "4ae62a15a20a9778"
+   }
+  },
+  "joc": {
+   "ro": "joc",
+   "en": "game",
+   "emoji": "🎮",
+   "g": "n",
+   "pl": "jocuri",
+   "def": "jocul",
+   "defPl": "jocurile",
+   "count": true,
+   "entry": "un joc, două jocuri",
+   "ask": "Unde este jocul?",
+   "a": {
+    "w": "8e85cdf1890e29cc",
+    "e": "d67ebaa73b3675e6",
+    "q": "8e8f69d50b50f277"
+   }
+  },
+  "card": {
+   "ro": "card",
+   "en": "card",
+   "emoji": "💳",
+   "g": "n",
+   "pl": "carduri",
+   "def": "cardul",
+   "defPl": "cardurile",
+   "count": true,
+   "entry": "un card, două carduri",
+   "ask": "Unde este cardul?",
+   "a": {
+    "w": "34cc9a82aa100b38",
+    "e": "70fa7679c74aaa65",
+    "q": "16d283bc97681788"
+   }
+  },
+  "inel": {
+   "ro": "inel",
+   "en": "ring",
+   "emoji": "💍",
+   "g": "n",
+   "pl": "inele",
+   "def": "inelul",
+   "defPl": "inelele",
+   "count": true,
+   "entry": "un inel, două inele",
+   "ask": "Unde este inelul?",
+   "a": {
+    "w": "a7f00b3c01634539",
+    "e": "6d6c984b2e66abda",
+    "q": "596b6cfd23aa975e"
+   }
+  }
+ },
+ "phrases": {
+  "notMine": {
+   "ro": "Ăsta nu-i cuibul meu!",
+   "en": "This isn't my nest!",
+   "a": "cd5fc03db9786b93"
+  },
+  "goodNight": {
+   "ro": "Noapte bună!",
+   "en": "Good night!",
+   "a": "0cc8518d192fa299"
+  },
+  "sleepWell": {
+   "ro": "Somn ușor!",
+   "en": "Sleep well!",
+   "a": "cb73b6dacd18ed11"
+  },
+  "tryAgain": {
+   "ro": "Mai încearcă!",
+   "en": "Try again!",
+   "a": "3ffef23f461e2c9c"
+  },
+  "congrats": {
+   "ro": "Felicitări!",
+   "en": "Congratulations!",
+   "a": "4d5b312ca9a81a17"
+  }
+ },
+ "poem": {
+  "title": "Somnoroase păsărele",
+  "author": "Mihai Eminescu",
+  "stanzas": [
+   {
+    "ro": [
+     "Somnoroase păsărele",
+     "Pe la cuiburi se adună,",
+     "Se ascund în rămurele —",
+     "Noapte bună!"
+    ],
+    "en": [
+     "Sleepy little birds",
+     "gather at their nests,",
+     "and hide among the little branches —",
+     "good night!"
+    ],
+    "a": "40251e3a7ed9b7f8"
+   },
+   {
+    "ro": [
+     "Doar izvoarele suspină,",
+     "Pe când codrul negru tace;",
+     "Dorm și florile-n grădină —",
+     "Dormi în pace!"
+    ],
+    "en": [
+     "Only the springs are sighing,",
+     "while the dark forest falls silent;",
+     "the flowers in the garden sleep too —",
+     "sleep in peace!"
+    ],
+    "a": "7e0d74cd5fec0da5"
+   },
+   {
+    "ro": [
+     "Trece lebăda pe ape",
+     "Între trestii să se culce —",
+     "Fie-ți îngerii aproape,",
+     "Somnul dulce!"
+    ],
+    "en": [
+     "The swan glides over the water",
+     "to lie down among the reeds —",
+     "may the angels be near you,",
+     "and your sleep be sweet!"
+    ],
+    "a": "88164c994585570b"
+   },
+   {
+    "ro": [
+     "Peste-a nopții feerie",
+     "Se ridică mândra lună,",
+     "Totu-i vis și armonie —",
+     "Noapte bună!"
+    ],
+    "en": [
+     "Over the enchantment of the night",
+     "the proud moon rises;",
+     "all is dream and harmony —",
+     "good night!"
+    ],
+    "a": "dc63c055c20fdd62"
+   }
+  ]
+ }
+}

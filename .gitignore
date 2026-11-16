@@ -28,3 +28,10 @@ pnpm-debug.log*
 # Misc
 coverage/
 *.local
+
+# Local screenshot output
+.shots/
+
+# Python
+__pycache__/
+*.pyc

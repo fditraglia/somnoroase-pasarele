@@ -1,1001 +1,802 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '../constants.js';
-import { LEVELS, levelParams } from '../data/words.js';
+import {
+  W, H, GROUND_Y, BIRD_R, BIRD_SIZE, FONT_DISPLAY, FONT_POEM, COLOR, MAX_PULL, LAUNCH_POWER,
+} from '../constants.js';
+import { view, bindView, worldPoint } from '../view.js';
+import { txt, button, panel, iconButton, withEmoji, emojiKey } from '../ui.js';
+import { sfx, music, applySettings } from '../audio/synth.js';
+import { voice } from '../audio/voice.js';
+import { topicById, TOPICS, PHRASES, POEM } from '../data/content.js';
+import { progress } from '../state/progress.js';
+import { buildSession, roundAudio, TIERS } from '../game/rounds.js';
+import {
+  buildTowers, buildSigns, buildNests, drawRopes, destroyTargets, targetPos,
+} from '../game/mechanics.js';
+import { Backdrop } from '../world/backdrop.js';
 
-const GROUND_Y = GAME_HEIGHT - 48;
-const MAX_STRETCH = 120; // how far back the slingshot can be pulled
-const LAUNCH_POWER = 0.22; // drag distance -> velocity multiplier
+const AIM_STEPS = 44;      // how much of the flight the dotted preview shows
+const SPARE_BIRDS = [10, 9, 8]; // misses allowed per level, by tier
 
-// Pool of nest perch points on the tree (branch forks/crooks). A round draws a
-// random few of these, so layout varies round to round.
-const NEST_ANCHORS = [
-  { x: 507, y: 443 }, { x: 875, y: 438 }, { x: 795, y: 344 }, { x: 174, y: 368 },
-  { x: 323, y: 297 }, { x: 518, y: 234 }, { x: 555, y: 99 }, { x: 184, y: 112 },
-];
-
-// Pool of bird-launch perches on the tree; one picked per round.
-const BIRD_PERCHES = [
-  { x: 641, y: 415 }, { x: 883, y: 443 }, { x: 915, y: 241 }, { x: 946, y: 316 },
-  { x: 38, y: 313 }, { x: 95, y: 111 }, { x: 534, y: 303 }, { x: 780, y: 81 },
-  { x: 565, y: 50 }, { x: 335, y: 372 }, { x: 329, y: 190 },
+const PRAISE = [
+  ['Bravo!', 'Well done!'], ['Foarte bine!', 'Very good!'], ['Corect!', 'Correct!'],
+  ['Excelent!', 'Excellent!'], ['Super!', 'Great!'], ['Minunat!', 'Wonderful!'],
 ];
 
 export default class GameScene extends Phaser.Scene {
   constructor() {
-    super('Game');
+    super({ key: 'Game', physics: { default: 'matter', matter: { gravity: { y: 1 }, debug: false } } });
+  }
+
+  init(data) {
+    this.topicId = data.topicId ?? TOPICS[0].id;
+    this.tierId = data.tier ?? 1;
+    this.startAt = data.round ?? 0;
+    this.layoutMode = !!data.layout;
   }
 
   create() {
+    this.topic = topicById(this.topicId);
+    this.session = buildSession(this.topic, this.tierId);
+    this.total = this.session.rounds.length;
+
+    this.backdrop = new Backdrop(this, { tree: true, night: 0 });
     this.buildWorld();
-    this.buildSlingshot();
+    this.buildEffects();
     this.buildHud();
     this.bindInput();
     this.bindCollisions();
 
-    // dev-only handle for automated playtesting in a headless browser
-    if (import.meta.env.DEV) {
-      window.__scene = this;
-      // ?mode=nest plays only nest rounds so the landing feel can be tuned in
-      // isolation; the live knock-down game is untouched without the flag.
-      const params = new URLSearchParams(window.location.search);
-      this.forceNest = params.get('mode') === 'nest';
-      this.pickModeOn = params.get('layout') === '1';
+    this.targets = [];
+    this.results = [];
+    this.score = 0;
+    this.streak = 0;
+    this.wrongAnswers = 0;
+    this.birdsLeft = this.total + SPARE_BIRDS[this.tierId - 1];
+    this.state = 'intro';
+    this.landing = [0.15, 0.4, 0.6][this.tierId - 1];
+
+    bindView(this, () => this.layout());
+    this.events.once('shutdown', () => this.teardown());
+    if (import.meta.env.DEV) window.__scene = this;
+
+    if (this.layoutMode) { // development: adjust the hand-placed points on the tree
+      [this.hudBar, this.birdIcon, ...this.pips].forEach((o) => o.setVisible(false));
+      import('../dev/layoutTool.js').then((m) => m.startLayoutTool(this));
+      return;
     }
 
-    // tunable alignment for the bird as it rests in a nest (see nestRestPose);
-    // adjust live in dev with __scene.tuneNest({ ... }).
-    this.nestTune = { scale: 1, hide: 0.08, tilt: -6, dx: 0.05, floatUp: 0.25, sleepDx: 0.2, sleepDy: -0.3 };
+    // Announce the level while its audio loads, then begin.
+    this.updateHud();
+    const tier = this.session.tier;
+    this.showBanner(`${this.topic.icon}  ${this.topic.ro}`, `${tier.ro} · ${tier.en}`, null, 1500);
+    // The first round's clips are fetched before play begins; the rest of the
+    // level's clips follow in the background while that round is played.
+    let ready = false;
+    let waited = false;
+    const go = () => { if (ready && waited && this.state === 'intro') this.startRound(this.startAt); };
+    const rounds = this.session.rounds;
+    const first = [...roundAudio(rounds[this.startAt]), ...Object.values(PHRASES).map((p) => p.a)];
+    voice.load(this, first).then(() => {
+      ready = true;
+      go();
+      voice.load(this, rounds.flatMap(roundAudio));
+    });
+    this.time.delayedCall(1500, () => { waited = true; go(); });
+    this.time.delayedCall(8000, () => { ready = true; go(); }); // do not wait forever on a slow network
+  }
 
-    this.perch = BIRD_PERCHES[0]; // default; re-picked each round
-    this.score = 0;
-    this.levelIndex = 0;
-    this.startLevel();
-
-    if (this.pickModeOn) this.time.delayedCall(80, () => this.enterPick());
+  teardown() {
+    voice.stop();
+    destroyTargets(this, this.targets);
+    this.targets = [];
   }
 
   // ---------------------------------------------------------------- world ----
   buildWorld() {
-    const bg = this.add.graphics().setDepth(-10);
-    bg.fillGradientStyle(0x2a2f6b, 0x2a2f6b, 0x4b3a72, 0x7a5a82, 1);
-    bg.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-
-    this.add.circle(GAME_WIDTH - 120, 90, 46, 0xf5f0c8, 0.9).setDepth(-9);
-    this.add.circle(GAME_WIDTH - 100, 80, 40, 0x4b3a72, 1).setAlpha(0.25).setDepth(-9);
-
-    this.add.rectangle(GAME_WIDTH / 2, GROUND_Y + 24, GAME_WIDTH, 48, 0x355e3b).setDepth(-8);
-
-    // the illustrated tree the nests perch in — behind all the play sprites
-    this.add.image(0, GAME_HEIGHT, 'tree').setOrigin(0, 1).setDisplaySize(GAME_WIDTH, GAME_HEIGHT).setDepth(-5);
-
-    this.matter.add.rectangle(GAME_WIDTH / 2, GROUND_Y + 24, GAME_WIDTH, 48, {
-      isStatic: true,
-      friction: 0.8,
-      label: 'ground',
+    this.matter.add.rectangle(W / 2, GROUND_Y + 40, 4000, 80, {
+      isStatic: true, friction: 0.9, label: 'ground',
     });
+    // Side walls sit at the edges of the visible strip (see layout()). The top
+    // is open: gravity is the ceiling, so a high lob can leave and come back.
+    const wall = { isStatic: true, friction: 0, restitution: 0.25, label: 'wall' };
+    this.wallL = this.matter.add.rectangle(-30, 0, 60, H * 6, wall);
+    this.wallR = this.matter.add.rectangle(W + 30, 0, 60, H * 6, wall);
 
-    // Invisible side walls only: nothing escapes left/right (no restoring force
-    // there). The top is open on purpose — gravity is the ceiling, so high
-    // parabolas can sail off the top and arc back down.
-    const wall = { isStatic: true, friction: 0, restitution: 0.2, label: 'wall' };
-    this.matter.add.rectangle(-25, 0, 50, GAME_HEIGHT * 4, wall);
-    this.matter.add.rectangle(GAME_WIDTH + 25, 0, 50, GAME_HEIGHT * 4, wall);
+    this.ropeGfx = this.add.graphics().setDepth(2.5);
+    this.bandGfx = this.add.graphics().setDepth(6.5);
+    this.aimGfx = this.add.graphics().setDepth(6);
+    this.trailGfx = this.add.graphics().setDepth(5.8);
+    this.trail = [];
   }
 
-  buildSlingshot() {
-    // the bird perches on the tree itself now — no separate post
-    this.bandGfx = this.add.graphics().setDepth(3);
-    this.aimGfx = this.add.graphics().setDepth(2);
+  buildEffects() {
+    this.stars = this.add.particles(0, 0, 'sparkle', {
+      speed: { min: 90, max: 330 }, angle: { min: 0, max: 360 },
+      scale: { start: 0.7, end: 0 }, rotate: { min: 0, max: 360 },
+      lifespan: { min: 500, max: 1000 }, gravityY: 260,
+      tint: [0xffd166, 0xfff3c4, 0xffffff, 0xb6f5a8], emitting: false,
+    }).setDepth(8);
+    this.feathers = this.add.particles(0, 0, 'feather', {
+      speed: { min: 30, max: 150 }, angle: { min: 200, max: 340 },
+      scale: { start: 0.7, end: 0.3 }, rotate: { start: 0, end: 300 },
+      alpha: { start: 0.9, end: 0 }, lifespan: { min: 700, max: 1400 }, gravityY: 120,
+      tint: [0x8e9bc4, 0xe9e1c6, 0xa9b6dd], emitting: false,
+    }).setDepth(8);
+    this.dust = this.add.particles(0, 0, 'glow', {
+      speed: { min: 20, max: 90 }, angle: { min: 180, max: 360 },
+      scale: { start: 0.35, end: 0.05 }, alpha: { start: 0.5, end: 0 },
+      lifespan: 450, tint: 0xd9c9a8, emitting: false,
+    }).setDepth(8);
   }
 
-  spawnBird() {
-    this.bird = this.matter.add.image(this.perch.x, this.perch.y, 'bird');
-    this.bird.setCircle(24);
-    this.bird.setFriction(0.6);
-    this.bird.setBounce(0.35);
-    this.bird.setDensity(0.004);
-    this.bird.setStatic(true);
-    this.bird.setDepth(7); // flies above the nests' front rims
-
-    this.zzz = this.add.text(this.perch.x + 16, this.perch.y - 28, '💤', {
-      fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
-      fontSize: '22px',
-    }).setOrigin(0.5).setDepth(6);
-
-    this.launched = false;
-    this.dragging = false;
-    this.restFrames = 0;
-  }
-
-  clearZzz() {
-    if (this.zzz) {
-      this.zzz.destroy();
-      this.zzz = null;
-    }
-  }
-
-  clearBird() {
-    if (this.bird) {
-      this.bird.destroy();
-      this.bird = null;
-    }
-    this.clearZzz();
-    this.launched = false;
-    this.dragging = false;
-    this.restFrames = 0;
-  }
-
-  // --------------------------------------------------------------- levels ----
-  startLevel() {
-    this.level = LEVELS[this.levelIndex];
-    const p = levelParams(this.levelIndex);
-    this.targetCount = p.targetCount;
-    this.wordsToClear = p.wordsToClear;
-    this.birdsLeft = p.birds;
-    this.wordsCleared = 0;
-    this.usedWords = new Set();
-    this.gameState = 'playing';
-
-    // landing demand for nest rounds: 0 = forgiving (wide, short walls),
-    // 1 = demanding (narrow opening, tall walls that force a real arc).
-    this.landingDifficulty = Math.min(this.levelIndex / 4, 1);
-    if (this.forceNest) {
-      // a meaty default for isolated tuning; override live via __scene
-      this.targetCount = 3;
-      this.landingDifficulty = 0.55;
-    }
-
-    this.updateHud();
-    this.showToast('Level ' + (this.levelIndex + 1) + ' · ' + this.level.theme + ' ' + this.level.icon);
-    this.startRound();
-  }
-
-  startRound() {
-    this.clearBird();
-    this.clearTargets();
-    this.clearSpeech();
-    this.roundResolved = false;
-
-    // answer prefers an unused word; distractors come from the same theme
-    const words = this.level.words;
-    let pool = words.filter((w) => !this.usedWords.has(w.ro));
-    if (pool.length === 0) {
-      this.usedWords.clear();
-      pool = [...words];
-    }
-    this.answer = Phaser.Utils.Array.GetRandom(pool);
-    this.usedWords.add(this.answer.ro);
-    const distractors = Phaser.Utils.Array.Shuffle(
-      words.filter((w) => w.ro !== this.answer.ro),
-    ).slice(0, this.targetCount - 1);
-    const placement = Phaser.Utils.Array.Shuffle([this.answer, ...distractors]);
-
-    if (this.forceNest) {
-      // well-spaced nests + a perch that isn't directly under/over any of them
-      const layout = this.pickNestLayout(placement.length);
-      this.perch = layout.perch;
-      this.targets = placement.map((word, i) => this.buildNest(layout.anchors[i], word));
-    } else {
-      this.perch = Phaser.Utils.Array.GetRandom(BIRD_PERCHES);
-      // knock-down targets spread across the right of the field at varied heights
-      const startX = GAME_WIDTH * 0.42;
-      const endX = GAME_WIDTH * 0.95;
-      const tiers = Phaser.Utils.Array.Shuffle([0, 1, 2, 0, 1]);
-      this.targets = placement.map((word, i) => {
-        const x = placement.length === 1
-          ? (startX + endX) / 2
-          : startX + ((endX - startX) * i) / (placement.length - 1);
-        return this.buildTarget(x, word, tiers[i % tiers.length]);
-      });
-    }
-
-    this.promptText.setText(this.answer.ro);
-    this.hintText.setText(this.forceNest
-      ? 'Tuck the bird into the "' + this.answer.ro + '" nest'
-      : 'Find the "' + this.answer.ro + '"');
-    this.feedbackText.setText('');
-    this.spawnBird();
-  }
-
-  // Choose `count` well-spaced nest anchors plus a perch that's horizontally
-  // clear of all of them (no straight-up lobs, no clustering). Falls back
-  // gracefully if the constraints can't all be met.
-  pickNestLayout(count) {
-    const MIN_GAP = 150; // min distance between any two nests
-    const MIN_PDX = 130; // min horizontal gap between perch and every nest
-    const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
-    let fallback = null;
-    for (let t = 0; t < 300; t += 1) {
-      const anchors = Phaser.Utils.Array.Shuffle(NEST_ANCHORS.slice()).slice(0, count);
-      let spaced = true;
-      for (let i = 0; i < anchors.length && spaced; i += 1) {
-        for (let j = i + 1; j < anchors.length; j += 1) {
-          if (dist(anchors[i], anchors[j]) < MIN_GAP) { spaced = false; break; }
-        }
-      }
-      if (!spaced) continue;
-      const perch = Phaser.Utils.Array.Shuffle(BIRD_PERCHES.slice())
-        .find((pc) => anchors.every((a) => Math.abs(a.x - pc.x) >= MIN_PDX));
-      if (perch) return { perch, anchors };
-      if (!fallback) fallback = { perch: Phaser.Utils.Array.GetRandom(BIRD_PERCHES), anchors };
-    }
-    return fallback || {
-      perch: Phaser.Utils.Array.GetRandom(BIRD_PERCHES),
-      anchors: Phaser.Utils.Array.Shuffle(NEST_ANCHORS.slice()).slice(0, count),
-    };
-  }
-
-  buildTarget(x, word, tier) {
-    const towerH = tier + 1; // 1..3 boxes -> varied perch heights
-    const boxes = [];
-    for (let row = 0; row < towerH; row += 1) {
-      const by = GROUND_Y - 30 - row * 60;
-      boxes.push(
-        this.matter.add.image(x, by, 'box').setFriction(0.8).setBounce(0.1).setDepth(2),
-      );
-    }
-
-    const perchTop = GROUND_Y - 30 - towerH * 60 - 44;
-    const go = this.matter.add.image(x, perchTop, 'target');
-    go.setRectangle(88, 88, { chamfer: { radius: 14 } });
-    go.setFriction(0.8);
-    go.setBounce(0.1);
-    go.setDensity(0.003);
-    go.setDepth(3);
-    go.isTarget = true;
-    go.word = word;
-
-    const label = this.add.text(x, perchTop, word.emoji + '\n' + word.en, {
-      fontFamily: 'system-ui, sans-serif',
-      fontSize: '20px',
-      align: 'center',
-      color: '#06283d',
-      fontStyle: 'bold',
-    }).setOrigin(0.5).setDepth(6);
-
-    return { go, label, boxes, word };
-  }
-
-  // An open-top nest the bird must arc down into, drawn with the 🪹 emoji.
-  // Static (opening always faces up → round stays winnable); difficulty comes
-  // from opening width + nest height/placement, set by this.landingDifficulty.
-  buildNest(anchor, word) {
-    const landing = this.landingDifficulty ?? 0.4;
-    const cx = anchor.x;
-    const size = Phaser.Math.Linear(150, 116, landing);
-    const cyImg = anchor.y;
-
-    // back layer: the whole nest. front layer: a copy cropped to just the front
-    // lip, drawn above the bird so a settled bird is occluded and looks *inside*.
-    const img = this.add.image(cx, cyImg, 'nest').setDisplaySize(size, size).setDepth(2);
-    const imgFront = this.add.image(cx, cyImg, 'nest').setDisplaySize(size, size).setDepth(5);
-    const texH = imgFront.frame.realHeight;
-    imgFront.setCrop(0, texH * 0.58, texH, texH * 0.42); // bottom lip only
-
-    // the bowl's opening sits a touch above the emoji's centre; physics walls
-    // run along the visible bowl sides so a flat shot is blocked and you must
-    // drop in from above.
-    const openCy = cyImg - size * 0.04;
-    const openH = size * 0.30;
-    const openW = size * Phaser.Math.Linear(0.50, 0.38, landing);
-    const rimTop = openCy - openH / 2;
-    const floorTopY = openCy + openH / 2;
-    const wallT = 12;
-    const floorThk = 14;
-
-    const solid = { isStatic: true, friction: 0.95, restitution: 0.05, label: 'nest' };
-    const floor = this.matter.add.rectangle(cx, floorTopY + floorThk / 2, openW + 2 * wallT, floorThk, solid);
-    const leftWall = this.matter.add.rectangle(cx - openW / 2 - wallT / 2, openCy, wallT, openH, solid);
-    const rightWall = this.matter.add.rectangle(cx + openW / 2 + wallT / 2, openCy, wallT, openH, solid);
-    const sensor = this.matter.add.rectangle(cx, openCy, openW * 0.9, openH * 0.9, {
-      isStatic: true, isSensor: true, label: 'nestSensor',
-    });
-
-    const label = this.add.text(cx, cyImg + size * 0.5 + 4, word.emoji + '\n' + word.en, {
-      fontFamily: 'system-ui, sans-serif',
-      fontSize: '20px',
-      align: 'center',
-      color: '#f3ead6',
-      fontStyle: 'bold',
-      backgroundColor: '#0b1026aa',
-      padding: { x: 8, y: 4 },
-    }).setOrigin(0.5).setDepth(6);
-
-    const nest = { bodies: [floor, leftWall, rightWall], sensor, gfx: img, gfxFront: imgFront, label, word, cx, cyImg, size, restY: floorTopY - 6 };
-    sensor.isNestSensor = true;
-    sensor.word = word;
-    sensor.nest = nest;
-    return nest;
-  }
-
-  // where/how the bird rests in a nest, from this.nestTune + the nest geometry.
-  // The front-rim layer is cropped at 58% down the texture, so its top edge is
-  // at cyImg + 0.08*size; the bird rests `sink` of its height below that line.
-  nestRestPose(nest) {
-    const t = this.nestTune;
-    const s = t.scale; // multiplier on the bird's native size; 1 = no shrink
-    const birdH = 80 * s;
-    const rimTopY = nest.cyImg + 0.08 * nest.size; // top edge of the front lip
-    return {
-      x: nest.cx + t.dx * nest.size,
-      // `hide` = fraction of the bird tucked behind the rim (0 = on top, 0.5 = half)
-      y: rimTopY - (0.5 - t.hide) * birdH,
-      s,
-      rot: Phaser.Math.DegToRad(t.tilt),
-    };
-  }
-
-  // dev: snap a bird into the first nest with the current tune so the landed
-  // look can be dialled in live, e.g. __scene.tuneNest({ sink: 0.25, scale: 0.5 })
-  tuneNest(opts = {}) {
-    Object.assign(this.nestTune, opts);
-    const nest = this.targets && this.targets[0];
-    if (!nest) { console.warn('no nest to tune against'); return; }
-    if (!this.bird) this.spawnBird();
-    this.bird.setStatic(true);
-    this.bird.setVelocity(0, 0);
-    this.bird.setDepth(4);
-    const pose = this.nestRestPose(nest);
-    this.bird.setPosition(pose.x, pose.y);
-    this.bird.setRotation(pose.rot);
-    this.bird.setScale(pose.s);
-    this.sleepAt(pose.x + nest.size * this.nestTune.sleepDx, pose.y + nest.size * this.nestTune.sleepDy);
-    console.log('nestTune =', JSON.stringify(this.nestTune));
-  }
-
-  // dev: drag the 5 nests + the bird onto the tree, then call dumpLayout()
-  enableLayout() {
-    this.layout = true;
-    this.clearTargets();
-    this.clearBird();
-    this.spawnBird();
-    const w = this.level.words;
-    this.targets = NEST_ANCHORS.map((a, i) => this.buildNest({ x: a.x, y: a.y }, w[i % w.length]));
-    this._anchors = NEST_ANCHORS.map((a) => ({ x: a.x, y: a.y }));
-    this._perch = { x: Math.round(this.bird.x), y: Math.round(this.bird.y) };
-
-    this.targets.forEach((t, i) => {
-      t.gfx._idx = i;
-      t.gfx.setInteractive({ draggable: true });
-      this.input.setDraggable(t.gfx);
-    });
-    this.bird._isBird = true;
-    this.bird.setInteractive({ draggable: true });
-    this.input.setDraggable(this.bird);
-
-    this.input.off('drag');
-    this.input.on('drag', (pointer, obj, dx, dy) => {
-      if (obj._isBird) {
-        this.bird.setPosition(dx, dy);
-        if (this.zzz) this.zzz.setPosition(dx + 16, dy - 28);
-        this._perch = { x: Math.round(dx), y: Math.round(dy) };
-      } else if (obj._idx != null) {
-        const t = this.targets[obj._idx];
-        t.gfx.setPosition(dx, dy);
-        t.gfxFront.setPosition(dx, dy);
-        t.label.setPosition(dx, dy + t.size * 0.5 + 4);
-        this._anchors[obj._idx] = { x: Math.round(dx), y: Math.round(dy) };
-      }
-    });
-    console.log('Layout ON — drag the nests + bird, then run __scene.dumpLayout()');
-  }
-
-  dumpLayout() {
-    console.log('NEST_ANCHORS = ' + JSON.stringify(this._anchors));
-    console.log('ANCHOR = ' + JSON.stringify(this._perch));
-  }
-
-  // dev: click the tree to drop anchor points; a ghost nest/bird shows exactly
-  // how it'll sit. __scene.pick('nest') then __scene.pick('perch'), then dumpPicks().
-  pick(kind) {
-    this.layout = true;
-    this._pickKind = kind || 'nest';
-    if (!this._picks) {
-      this._picks = { nest: [], perch: [] };
-      this.clearTargets();
-      this.clearBird();
-      this.promptText.setText('');
-      this.hintText.setText('');
-      const g = this.add.graphics().setDepth(55);
-      g.lineStyle(1, 0xffffff, 0.12);
-      for (let x = 0; x <= GAME_WIDTH; x += 50) g.lineBetween(x, 0, x, GAME_HEIGHT);
-      for (let y = 0; y <= GAME_HEIGHT; y += 50) g.lineBetween(0, y, GAME_WIDTH, y);
-      this.input.on('pointerdown', (pointer) => {
-        const x = Math.round(pointer.worldX);
-        const y = Math.round(pointer.worldY);
-        const list = this._picks[this._pickKind];
-        list.push({ x, y });
-        if (this._pickKind === 'nest') {
-          this.add.image(x, y, 'nest').setDisplaySize(132, 132).setAlpha(0.72).setDepth(58);
-        } else {
-          this.add.image(x, y, 'bird').setDisplaySize(80, 80).setAlpha(0.85).setDepth(58);
-        }
-        this.add.text(x + 6, y - 8, this._pickKind[0] + list.length, {
-          fontSize: '13px', color: '#ffe14d', fontStyle: 'bold',
-        }).setDepth(60);
-        console.log(this._pickKind + ' ' + list.length + ': {x:' + x + ', y:' + y + '}');
-      });
-    }
-    console.log('Picking "' + this._pickKind + '" — click the tree. Switch with __scene.pick("perch"). Dump with __scene.dumpPicks().');
-  }
-
-  dumpPicks() {
-    console.log('NEST_ANCHORS = ' + JSON.stringify(this._picks.nest));
-    console.log('BIRD_PERCHES = ' + JSON.stringify(this._picks.perch));
-  }
-
-  // Visible, no-console layout tool: turned on by ?layout=1. Shows a grid, lets
-  // you click to drop ghost nests/perches, and prints the coordinates ON SCREEN.
-  enterPick() {
-    this.layout = true;
-    this._picks = { nest: [], perch: [] };
-    this._pickKind = 'nest';
-    this.clearTargets();
-    this.clearBird();
-    this.promptText.setText('');
-    this.hintText.setText('');
-
-    const g = this.add.graphics().setDepth(50);
-    g.lineStyle(1, 0xffffff, 0.18);
-    for (let x = 0; x <= GAME_WIDTH; x += 50) g.lineBetween(x, 0, x, GAME_HEIGHT);
-    for (let y = 0; y <= GAME_HEIGHT; y += 50) g.lineBetween(0, y, GAME_WIDTH, y);
-    g.lineStyle(2, 0x66ffdd, 0.6);
-    for (let x = 0; x <= GAME_WIDTH; x += 100) g.lineBetween(x, 0, x, GAME_HEIGHT);
-    for (let y = 0; y <= GAME_HEIGHT; y += 100) g.lineBetween(0, y, GAME_WIDTH, y);
-    for (let x = 100; x <= 1000; x += 100) this.add.text(x + 2, 82, '' + x, { fontSize: '12px', color: '#9fffe6' }).setDepth(51);
-    for (let y = 100; y <= 500; y += 100) this.add.text(4, y + 2, '' + y, { fontSize: '12px', color: '#9fffe6' }).setDepth(51);
-
-    const header = this.add.text(GAME_WIDTH / 2, 110, '', {
-      fontSize: '14px', color: '#ffe14d', fontStyle: 'bold', backgroundColor: '#000a', padding: { x: 8, y: 4 },
-    }).setOrigin(0.5).setDepth(61);
-    const setHeader = () => header.setText(
-      'Add ' + (this._pickKind === 'nest' ? 'NESTS' : 'BIRD PERCHES')
-      + ': click  ·  drag to move  ·  B = switch  ·  Z = undo  ·  C = copy coords');
-    setHeader();
-
-    const readout = this.add.text(8, 128, '', {
-      fontSize: '11px', color: '#bdf', backgroundColor: '#000a', padding: { x: 6, y: 4 }, wordWrap: { width: GAME_WIDTH - 16 },
-    }).setDepth(61);
-    const updateReadout = () => readout.setText(
-      'NESTS: ' + JSON.stringify(this._picks.nest) + '\nPERCHES: ' + JSON.stringify(this._picks.perch));
-
-    this._ghosts = [];
-    const place = (kind, x, y) => {
-      this._picks[kind].push({ x, y });
-      const ghost = (kind === 'nest')
-        ? this.add.image(x, y, 'nest').setDisplaySize(132, 132).setAlpha(0.72).setDepth(58)
-        : this.add.image(x, y, 'bird').setDisplaySize(80, 80).setAlpha(0.85).setDepth(58);
-      const lbl = this.add.text(x + 6, y - 8, '(' + x + ',' + y + ')', {
-        fontSize: '12px', color: '#fff', fontStyle: 'bold', backgroundColor: '#0009',
-      }).setDepth(60);
-      ghost._kind = kind;
-      ghost._lbl = lbl;
-      ghost.setInteractive({ draggable: true });
-      this.input.setDraggable(ghost);
-      this._ghosts.push(ghost);
-      updateReadout();
-    };
-
-    this.input.on('pointerdown', (pointer) => {
-      if (this.input.hitTestPointer(pointer).length) return; // clicked a ghost → drag, don't add
-      place(this._pickKind, Math.round(pointer.worldX), Math.round(pointer.worldY));
-    });
-
-    this.input.on('drag', (pointer, obj, dx, dy) => {
-      const x = Math.round(dx);
-      const y = Math.round(dy);
-      obj.setPosition(x, y);
-      obj._lbl.setPosition(x + 6, y - 8).setText('(' + x + ',' + y + ')');
-      const i = this._ghosts.filter((gh) => gh._kind === obj._kind).indexOf(obj);
-      if (i >= 0) this._picks[obj._kind][i] = { x, y };
-      updateReadout();
-    });
-
-    this.input.keyboard.on('keydown-B', () => { this._pickKind = this._pickKind === 'nest' ? 'perch' : 'nest'; setHeader(); });
-    this.input.keyboard.on('keydown-Z', () => {
-      const g = this._ghosts.pop();
-      if (!g) return;
-      this._picks[g._kind].pop();
-      g._lbl.destroy();
-      g.destroy();
-      updateReadout();
-    });
-    this.input.keyboard.on('keydown-C', () => {
-      const txt = 'NEST_ANCHORS = ' + JSON.stringify(this._picks.nest)
-        + '\nBIRD_PERCHES = ' + JSON.stringify(this._picks.perch);
-      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).catch(() => {});
-      const note = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'Copied to clipboard!\nPaste it to Claude.', {
-        fontSize: '22px', color: '#9fffb3', fontStyle: 'bold', align: 'center', backgroundColor: '#000c', padding: { x: 16, y: 12 },
-      }).setOrigin(0.5).setDepth(70);
-      this.time.delayedCall(1800, () => note.destroy());
-    });
-  }
-
-  // The landing payoff: the bird drifts gently straight up just above the nest,
-  // gets its 💤, then settles softly down into the bowl to sleep.
-  animateNestLanding(nest) {
-    this.bird.setStatic(true);
-    this.bird.setVelocity(0, 0);
-    this.bird.setAngularVelocity(0);
-    this.bird.setDepth(4); // tuck behind the nest's front rim → looks inside
-
-    const pose = this.nestRestPose(nest);
-    const aboveY = pose.y - this.nestTune.floatUp * nest.size;
-    const pp = { x: this.bird.x, y: this.bird.y, rot: this.bird.rotation, s: this.bird.scaleX };
-    const apply = () => {
-      if (!this.bird) return;
-      this.bird.setPosition(pp.x, pp.y);
-      this.bird.setRotation(pp.rot);
-      this.bird.setScale(pp.s);
-    };
-    // phase 1: gentle rise to just above the nest, straightening upright
-    this.tweens.add({
-      targets: pp, x: pose.x, y: aboveY, rot: 0, s: pose.s,
-      duration: 700, ease: 'Sine.easeOut', onUpdate: apply,
-      onComplete: () => {
-        this.sleepAt(pose.x + nest.size * this.nestTune.sleepDx, pose.y + nest.size * this.nestTune.sleepDy);
-        // phase 2: settle softly down into the bowl, head tilting to sleep
-        this.tweens.add({
-          targets: pp, y: pose.y, rot: Phaser.Math.DegToRad(this.nestTune.tilt),
-          duration: 650, ease: 'Sine.easeInOut', onUpdate: apply,
-        });
-      },
-    });
-  }
-
-  // dev: replay the landing motion on the first nest without scoring/advancing
-  previewLand() {
-    const nest = this.targets && this.targets[0];
-    if (!nest) { console.warn('no nest to preview'); return; }
-    if (!this.bird) this.spawnBird();
-    this.clearZzz();
-    this.launched = true;       // suppress the slingshot bands during preview
-    this.roundResolved = true;  // and stop the idle bird from being recycled
-    this.bird.setStatic(true);
-    this.bird.setScale(1);
-    this.bird.setRotation(0.4);
-    this.bird.setPosition(nest.cx + 24, nest.cyImg - nest.size * 0.55);
-    this.animateNestLanding(nest);
-  }
-
-  // bird settled into the correct nest — let it fall asleep
-  onCorrectNest(nest) {
-    this.roundResolved = true;
-    this.score += 1;
-    this.wordsCleared += 1;
-    this.birdsLeft -= 1;
-    this.updateHud();
-
-    this.animateNestLanding(nest);
-
-    this.feedbackText.setColor('#cfe3ff');
-    this.feedbackText.setText('Noapte bună 🌙\n' + this.answer.ro + ' = ' + this.answer.en);
-
-    this.time.delayedCall(2200, () => {
-      if (this.wordsCleared >= this.wordsToClear) this.onLevelClear();
-      else if (this.birdsLeft <= 0) this.onGameOver();
-      else this.startRound();
-    });
-  }
-
-  // A little speech bubble above a nest — the bird "saying" something. (When the
-  // bird gets a voice, this is where a spoken line would sync.)
-  speakWrong(nest) {
-    this.clearSpeech();
-    const y = nest.cyImg - nest.size * 0.5;
-    this.speechObj = this.add.text(nest.cx, y, 'Ăsta nu-i cuibul meu!', {
-      fontFamily: 'Georgia, serif', fontSize: '19px', color: '#fff3c4', fontStyle: 'italic',
-      backgroundColor: '#0b1026cc', padding: { x: 10, y: 6 }, align: 'center',
-    }).setOrigin(0.5).setDepth(21).setAlpha(0);
-    this.tweens.add({ targets: this.speechObj, alpha: 1, y: y - 8, duration: 200 });
-  }
-
-  clearSpeech() {
-    if (this.speechObj) { this.speechObj.destroy(); this.speechObj = null; }
-  }
-
-  // The wrong-nest beat: the bird settles in as if home, pauses, then *realizes*
-  // it's the wrong nest — pops up, protests in Romanian, shakes its head "no",
-  // and hops back out.
-  animateWrongNest(nest, onDone) {
-    this.bird.setStatic(true);
-    this.bird.setVelocity(0, 0);
-    this.bird.setAngularVelocity(0);
-    this.bird.setDepth(4); // settles in at first — it thinks it's home
-    const pose = this.nestRestPose(nest);
-    const pp = { x: this.bird.x, y: this.bird.y, rot: this.bird.rotation, s: this.bird.scaleX, a: 1 };
-    const apply = () => {
-      if (!this.bird) return;
-      this.bird.setPosition(pp.x, pp.y);
-      this.bird.setRotation(pp.rot);
-      this.bird.setScale(pp.s);
-      this.bird.setAlpha(pp.a);
-    };
-    // 0: settle into the nest as if it were home
-    this.tweens.add({
-      targets: pp, x: pose.x, y: pose.y, rot: pose.rot, s: pose.s,
-      duration: 300, ease: 'Sine.easeOut', onUpdate: apply,
-      onComplete: () => {
-        // ...a beat... then the realization
-        this.time.delayedCall(650, () => {
-          if (!this.bird) return;
-          this.bird.setDepth(7); // pops above the rim now
-          this.speakWrong(nest);
-          const baseX = pp.x;
-          // 1: startled perk-up
-          this.tweens.add({
-            targets: pp, y: pose.y - 18, rot: 0, duration: 150, ease: 'Quad.easeOut', onUpdate: apply,
-            onComplete: () => {
-              // 2: shake head "no" — side-to-side, upright
-              this.tweens.add({
-                targets: pp, x: { from: baseX - 6, to: baseX + 6 }, duration: 80, ease: 'Sine.easeInOut',
-                yoyo: true, repeat: 3, onUpdate: apply,
-                onComplete: () => {
-                  // a beat to read the line (and later hear it), then glide
-                  // slowly back to the slingshot to try again
-                  this.time.delayedCall(1000, () => {
-                    if (!this.bird) return;
-                    this.clearSpeech();
-                    this.tweens.add({
-                      targets: pp, x: this.perch.x, y: this.perch.y, rot: 0,
-                      duration: 850, ease: 'Sine.easeInOut', onUpdate: apply,
-                      onComplete: () => onDone && onDone(),
-                    });
-                  });
-                },
-              });
-            },
-          });
-        });
-      },
-    });
-  }
-
-  // dev: replay the wrong-nest reaction on a distractor nest
-  previewWrong() {
-    const nest = (this.targets || []).find((t) => t.word.ro !== this.answer.ro) || (this.targets || [])[0];
-    if (!nest) { console.warn('no nest to preview'); return; }
-    if (!this.bird) this.spawnBird();
-    this.launched = true;
-    this.roundResolved = true; // dev: stop idle-recycle during preview
-    this.bird.setScale(1);
-    this.bird.setAlpha(1);
-    this.bird.setPosition(nest.cx, nest.cyImg - nest.size * 0.4);
-    this.animateWrongNest(nest, () => { this.clearSpeech(); this.feedbackText.setText(''); });
-  }
-
-  // bird dropped into the wrong nest — react, then spend it and retry the word
-  onWrongNest(nest) {
-    if (this.roundResolved || this.wrongResolving) return;
-    this.wrongResolving = true;
-    this.animateWrongNest(nest, () => {
-      this.wrongResolving = false;
-      this.clearSpeech();
-      this.feedbackText.setText('');
-      this.recycleBird(); // costs a bird; respawns to retry, or ends the game
-    });
-  }
-
-  sleepAt(x, y) {
-    this.clearZzz();
-    this.zzz = this.add.text(x, y, '💤', {
-      fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
-      fontSize: '26px',
-    }).setOrigin(0.5).setDepth(7).setAlpha(0);
-    this.tweens.add({ targets: this.zzz, alpha: 1, y: y - 12, duration: 600, yoyo: true, repeat: 2 });
-  }
-
-  clearTargets() {
-    if (!this.targets) return;
-    this.targets.forEach((t) => {
-      if (t.label) t.label.destroy();
-      if (t.go) t.go.destroy();
-      if (t.boxes) t.boxes.forEach((b) => b.destroy());
-      if (t.gfx) t.gfx.destroy();
-      if (t.gfxFront) t.gfxFront.destroy();
-      if (t.sensor) this.matter.world.remove(t.sensor);
-      if (t.bodies) t.bodies.forEach((b) => this.matter.world.remove(b));
-    });
-    this.targets = [];
-  }
-
-  // ----------------------------------------------------------------- hud -----
+  // ------------------------------------------------------------------ hud ----
   buildHud() {
-    this.add.rectangle(GAME_WIDTH / 2, 34, GAME_WIDTH, 68, 0x0b1026, 0.55).setDepth(10);
+    this.hudBar = this.add.graphics().setDepth(20);
+    const display = { fontFamily: withEmoji(FONT_DISPLAY) };
 
-    this.levelText = this.add.text(20, 12, '', {
-      fontFamily: 'system-ui, sans-serif',
-      fontSize: '16px',
-      color: '#9fb3ff',
-      fontStyle: 'bold',
-    }).setDepth(11);
+    this.topicText = txt(this, 0, 6, '', { ...display, fontSize: '19px', color: COLOR.pale, fontStyle: '500' }).setDepth(21);
+    this.pips = [];
+    for (let i = 0; i < this.total; i += 1) {
+      this.pips.push(this.add.circle(0, 44, 7, 0xffffff, 0.16).setStrokeStyle(1.5, 0xfff0c8, 0.7).setDepth(21));
+    }
 
-    this.progressText = this.add.text(20, 36, '', {
-      fontFamily: 'system-ui, sans-serif',
-      fontSize: '14px',
-      color: '#c9d3ff',
-    }).setDepth(11);
+    this.promptMain = txt(this, W / 2, -2, '', { ...display, fontSize: '36px', color: COLOR.gold, fontStyle: '600', padding: { x: 4, y: 8 } })
+      .setOrigin(0.5, 0).setDepth(21);
+    this.promptSub = txt(this, W / 2, 42, '', { fontSize: '16px', color: COLOR.pale, fontStyle: '700' })
+      .setOrigin(0.5, 0).setDepth(21);
+    this.speakBtn = iconButton(this, 0, 26, '🔊', () => this.speakPrompt(), { size: 40, fontSize: 19 }).setVisible(false);
 
-    this.promptText = this.add.text(GAME_WIDTH / 2, 30, '', {
-      fontFamily: 'Georgia, serif',
-      fontSize: '34px',
-      color: '#ffd166',
-      fontStyle: 'bold',
-    }).setOrigin(0.5).setDepth(11);
+    this.birdIcon = this.add.image(0, 22, 'bird-sleepy').setDisplaySize(46, 46).setDepth(21);
+    this.birdsText = txt(this, 0, 8, '', { ...display, fontSize: '22px', color: '#ffffff', fontStyle: '600' }).setDepth(21);
+    this.scoreText = txt(this, 0, 36, '', { ...display, fontSize: '18px', color: COLOR.gold, fontStyle: '500' })
+      .setOrigin(1, 0).setDepth(21);
+    this.menuBtn = iconButton(this, 0, 30, '☰', () => this.openMenu(), { size: 44, fontSize: 22 });
 
-    this.hintText = this.add.text(GAME_WIDTH / 2, 56, '', {
-      fontFamily: 'system-ui, sans-serif',
-      fontSize: '13px',
-      color: '#c9d3ff',
-    }).setOrigin(0.5, 0).setDepth(11);
+    // feedback shown in the middle of the field
+    this.banner = this.add.container(W / 2, 210).setDepth(30).setVisible(false);
+    this.bannerBg = this.add.graphics();
+    this.bannerTop = txt(this, 0, -52, '', { ...display, fontSize: '20px', color: COLOR.gold, fontStyle: '500' }).setOrigin(0.5);
+    this.bannerMain = txt(this, 0, -10, '', { ...display, fontSize: '40px', color: '#ffffff', fontStyle: '600', align: 'center' }).setOrigin(0.5);
+    this.bannerSub = txt(this, 0, 36, '', { fontSize: '20px', color: COLOR.pale, fontStyle: '700', align: 'center' }).setOrigin(0.5);
+    this.banner.add([this.bannerBg, this.bannerTop, this.bannerMain, this.bannerSub]);
 
-    this.scoreText = this.add.text(GAME_WIDTH - 20, 12, 'Score: 0', {
-      fontFamily: 'system-ui, sans-serif',
-      fontSize: '16px',
-      color: '#9fffb3',
-      fontStyle: 'bold',
-    }).setOrigin(1, 0).setDepth(11);
+    this.toast = txt(this, W / 2, 96, '', {
+      ...display, fontSize: '24px', color: '#fff1ec', fontStyle: '600', backgroundColor: '#7a2d3cdd', padding: { x: 16, y: 8 },
+    }).setOrigin(0.5).setDepth(30).setVisible(false);
 
-    this.birdsText = this.add.text(GAME_WIDTH - 20, 36, '', {
-      fontFamily: 'system-ui, sans-serif',
-      fontSize: '15px',
-      color: '#ffd1d1',
-    }).setOrigin(1, 0).setDepth(11);
+    this.hint = txt(this, W / 2, H - 22, '', {
+      fontSize: '19px', color: '#ffffff', fontStyle: '800', backgroundColor: '#1d1447cc', padding: { x: 14, y: 7 },
+    }).setOrigin(0.5).setDepth(30).setVisible(false);
+  }
 
-    this.feedbackText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 30, '', {
-      fontFamily: 'Georgia, serif',
-      fontSize: '38px',
-      color: '#ffffff',
-      fontStyle: 'bold',
-      align: 'center',
-    }).setOrigin(0.5).setDepth(20);
+  layout() {
+    const L = view.left;
+    const R = view.right;
+    this.hudBar.clear();
+    this.hudBar.fillGradientStyle(0x150d3a, 0x150d3a, 0x150d3a, 0x150d3a, 0.78, 0.78, 0.4, 0.4);
+    this.hudBar.fillRect(L - 4, 0, R - L + 8, 66);
+    this.topicText.setX(L + 16);
+    this.pips.forEach((p, i) => p.setX(L + 25 + i * 20));
+    this.menuBtn.setX(R - 34);
+    this.scoreText.setX(R - 66);
+    this.birdsText.setX(R - 66 - this.birdsText.width);
+    this.birdIcon.setX(this.birdsText.x - 24);
+    this.placeSpeaker();
+    // walls follow the visible edges
+    const body = Phaser.Physics.Matter.Matter.Body;
+    body.setPosition(this.wallL, { x: L - 30, y: 0 });
+    body.setPosition(this.wallR, { x: R + 30, y: 0 });
+  }
+
+  placeSpeaker() {
+    this.speakBtn.setX(W / 2 + this.promptMain.displayWidth / 2 + 34);
   }
 
   updateHud() {
-    this.levelText.setText('Level ' + (this.levelIndex + 1) + ' · ' + this.level.theme + ' ' + this.level.icon);
-    this.progressText.setText('Cleared ' + this.wordsCleared + ' / ' + this.wordsToClear);
-    this.scoreText.setText('Score: ' + this.score);
-    this.birdsText.setText('🐦 × ' + Math.max(0, this.birdsLeft));
+    const tier = this.session.tier;
+    this.topicText.setText(`${this.topic.icon} ${this.topic.ro}  ·  ${tier.ro}`);
+    this.birdsText.setText(`× ${Math.max(0, this.birdsLeft)}`);
+    this.scoreText.setText(`★ ${this.score}`);
+    this.pips.forEach((p, i) => {
+      const r = this.results[i];
+      if (r) p.setFillStyle(r.firstTry ? 0xffd166 : 0xff9f80, 1);
+      else if (this.round && i === this.round.index) p.setFillStyle(0xffffff, 0.75);
+      else p.setFillStyle(0xffffff, 0.16);
+    });
+    this.layout();
+  }
+
+  setPrompt(main, sub, hasAudio) {
+    this.promptMain.setText(main);
+    this.promptSub.setText(sub);
+    // long prompts shrink to stay clear of the corner readouts
+    const room = 470;
+    this.promptMain.setScale(Math.min(1, room / Math.max(1, this.promptMain.width)));
+    this.speakBtn.setVisible(!!hasAudio);
+    this.placeSpeaker();
+    this.tweens.add({ targets: this.promptMain, y: { from: -10, to: -2 }, alpha: { from: 0, to: 1 }, duration: 260 });
+  }
+
+  // Say the prompt. On a slow connection the clip may still be on its way, so
+  // keep trying for a few seconds rather than leave a listening round silent.
+  speakPrompt(attempt = 0) {
+    const round = this.round;
+    if (!round || !round.prompt.audio || this.state === 'done') return;
+    if (voice.has(round.prompt.audio)) { voice.play(round.prompt.audio); return; }
+    if (attempt < 25) this.time.delayedCall(300, () => { if (this.round === round) this.speakPrompt(attempt + 1); });
+  }
+
+  showBanner(main, sub, top, hold = 0) {
+    this.bannerTop.setText(top || '');
+    this.bannerMain.setText(main);
+    this.bannerSub.setText(sub || '');
+    this.bannerMain.setScale(1);
+    this.bannerMain.setScale(Math.min(1, 760 / Math.max(1, this.bannerMain.width)));
+    const w = Math.max(this.bannerMain.displayWidth, this.bannerSub.width, this.bannerTop.width) + 70;
+    const y0 = top ? -78 : -44;
+    const h = (sub ? 62 : 36) - y0;
+    this.bannerBg.clear();
+    this.bannerBg.fillStyle(0x1d1447, 0.95).fillRoundedRect(-w / 2, y0, w, h, 20);
+    this.bannerBg.lineStyle(2.5, 0xfff0c8, 0.85).strokeRoundedRect(-w / 2, y0, w, h, 20);
+    this.tweens.killTweensOf(this.banner);
+    this.banner.setVisible(true).setAlpha(0).setScale(0.8);
+    this.tweens.add({ targets: this.banner, alpha: 1, scale: 1, duration: 240, ease: 'Back.easeOut' });
+    if (hold) this.time.delayedCall(hold, () => this.hideBanner());
+  }
+
+  hideBanner() {
+    if (!this.banner.visible) return;
+    this.tweens.add({ targets: this.banner, alpha: 0, duration: 180, onComplete: () => this.banner.setVisible(false) });
+  }
+
+  showToast(text, hold = 1700) {
+    this.toast.setText(text).setVisible(true).setAlpha(0);
+    this.tweens.killTweensOf(this.toast);
+    this.tweens.add({ targets: this.toast, alpha: 1, y: { from: 86, to: 96 }, duration: 160 });
+    if (this.toastTimer) this.toastTimer.remove();
+    this.toastTimer = this.time.delayedCall(hold, () => {
+      this.tweens.add({ targets: this.toast, alpha: 0, duration: 200, onComplete: () => this.toast.setVisible(false) });
+    });
+  }
+
+  // --------------------------------------------------------------- rounds ----
+  startRound(i) {
+    this.clearBird();
+    destroyTargets(this, this.targets);
+    this.targets = [];
+    this.ropeGfx.clear();
+    this.clearTrail();
+    this.clearSpeech();
+    this.hideBanner();
+
+    this.round = this.session.rounds[i];
+    this.roundWrong = 0;
+    this.backdrop.setNight((i / this.total) * 0.85);
+
+    const { mechanic, options } = this.round;
+    const built = mechanic === 'towers' ? buildTowers(this, options)
+      : mechanic === 'signs' ? buildSigns(this, options)
+        : buildNests(this, options, this.landing, this.round.answer);
+    this.targets = built.targets;
+    this.perch = built.perch;
+
+    const p = this.round.prompt;
+    this.setPrompt(p.main, p.sub, p.audio);
+    this.updateHud();
+    this.spawnBird();
+    this.state = 'aim';
+    this.time.delayedCall(380, () => { if (this.state === 'aim') this.speakPrompt(); });
+
+    if (!progress.seenHowTo) {
+      this.hint.setText('👆  Drag anywhere to pull the bird back, then let go').setVisible(true);
+    }
+  }
+
+  // ----------------------------------------------------------------- bird ----
+  spawnBird() {
+    const b = this.matter.add.image(this.perch.x, this.perch.y, 'bird-sleepy');
+    b.setScale(BIRD_SIZE / 256);
+    b.setCircle(BIRD_R);
+    b.setFriction(0.6).setBounce(0.35).setDensity(0.004);
+    b.setStatic(true);
+    b.setDepth(7);
+    // face the middle of the field
+    b.setFlipX(this.perch.x > W / 2);
+    b.setAlpha(0);
+    this.tweens.add({ targets: b, alpha: 1, duration: 220 });
+    this.bird = b;
+    this.birdLive = false;
+    this.dragging = false;
+    this.restFrames = 0;
+    this.flightFrames = 0;
+    this.showZzz(this.perch.x + (b.flipX ? -30 : 30), this.perch.y - 34);
+  }
+
+  showZzz(x, y) {
+    this.clearZzz();
+    this.zzz = txt(this, x, y, '💤', { fontSize: '26px' }).setOrigin(0.5).setDepth(7.5);
+    this.zzzBase = y;
+  }
+
+  clearZzz() {
+    if (this.zzz) { this.zzz.destroy(); this.zzz = null; }
+  }
+
+  clearBird() {
+    if (this.bird) { this.tweens.killTweensOf(this.bird); this.bird.destroy(); this.bird = null; }
+    this.clearZzz();
+    this.dragging = false;
+  }
+
+  clearTrail() {
+    this.trail = [];
+    this.trailGfx.clear();
   }
 
   // --------------------------------------------------------------- input -----
   bindInput() {
-    this.input.on('pointerdown', (p) => {
-      if (this.layout) return; // dev layout mode handles its own dragging
-      // while an overlay is up, a tap advances it
-      if (this.gameState !== 'playing') {
-        if (this.overlayTap) {
-          const cb = this.overlayTap;
-          this.overlayTap = null;
-          this.hideOverlay();
-          cb();
-        }
-        return;
-      }
-      if (!this.bird || this.launched || this.roundResolved) return;
-      const d = Phaser.Math.Distance.Between(p.x, p.y, this.bird.x, this.bird.y);
-      if (d < 60) this.dragging = true;
+    this.input.on('pointerdown', (pointer, over) => {
+      if (this.state !== 'aim' || !this.bird || this.dragging || over.length) return;
+      this.dragStart = worldPoint(this, pointer).clone();
+      this.dragging = true;
+      this.pullStep = 0;
+      this.bird.setTexture('bird-fly');
+      this.clearZzz();
+      sfx.grab();
     });
 
-    this.input.on('pointermove', (p) => {
-      if (this.layout) return;
+    this.input.on('pointermove', (pointer) => {
       if (!this.dragging || !this.bird) return;
-      const angle = Phaser.Math.Angle.Between(this.perch.x, this.perch.y, p.x, p.y);
-      const dist = Math.min(MAX_STRETCH, Phaser.Math.Distance.Between(this.perch.x, this.perch.y, p.x, p.y));
-      this.bird.setPosition(this.perch.x + Math.cos(angle) * dist, this.perch.y + Math.sin(angle) * dist);
+      const p = worldPoint(this, pointer);
+      const d = new Phaser.Math.Vector2(p.x - this.dragStart.x, p.y - this.dragStart.y);
+      if (d.length() > MAX_PULL) d.setLength(MAX_PULL);
+      this.bird.setPosition(this.perch.x + d.x, this.perch.y + d.y);
+      if (Math.abs(d.x) > 4) this.bird.setFlipX(d.x > 0); // it will fly the other way
+      const step = Math.floor(d.length() / 16);
+      if (step !== this.pullStep) { this.pullStep = step; sfx.stretch(d.length() / MAX_PULL); }
     });
 
-    this.input.on('pointerup', () => {
-      if (this.layout) return;
+    // a level opened directly (a reload, a shortcut) still gets its lullaby
+    this.input.once('pointerdown', () => music.start());
+
+    const release = () => {
       if (!this.dragging || !this.bird) return;
       this.dragging = false;
       const dx = this.perch.x - this.bird.x;
       const dy = this.perch.y - this.bird.y;
-      if (Math.hypot(dx, dy) < 12) {
+      if (Math.hypot(dx, dy) < 14) { // too small to count: settle back to sleep
         this.bird.setPosition(this.perch.x, this.perch.y);
+        this.bird.setTexture('bird-sleepy');
+        this.showZzz(this.perch.x + (this.bird.flipX ? -30 : 30), this.perch.y - 34);
         return;
       }
-      this.bird.setStatic(false);
-      this.bird.setVelocity(dx * LAUNCH_POWER, dy * LAUNCH_POWER);
-      this.bird.setAngularVelocity(0.05);
-      this.clearZzz(); // awake now!
-      this.launched = true;
-    });
+      this.launch(dx * LAUNCH_POWER, dy * LAUNCH_POWER);
+    };
+    this.input.on('pointerup', release);
+    this.input.on('pointerupoutside', release);
+  }
+
+  launch(vx, vy) {
+    this.clearTrail();
+    this.clearZzz();
+    this.bird.setStatic(false);
+    this.bird.setVelocity(vx, vy);
+    this.bird.setAngularVelocity(vx >= 0 ? 0.04 : -0.04);
+    this.state = 'flight';
+    this.birdLive = true;
+    this.restFrames = 0;
+    this.flightFrames = 0;
+    sfx.launch(Math.hypot(vx, vy) / (MAX_PULL * LAUNCH_POWER));
+    this.feathers.explode(5, this.perch.x, this.perch.y);
+    if (this.hint.visible) { this.hint.setVisible(false); progress.markHowTo(); }
+  }
+
+  // The flight the engine will actually produce, step by step. Matter's
+  // integrator is: v = v * (1 - airFriction) + gravity * dt^2; position += v.
+  flightPath(x, y, vx, vy, steps) {
+    const world = this.matter.world;
+    const dt = world.runner.delta * world.engine.timing.timeScale;
+    const drag = 1 - 0.01 * (dt / (1000 / 60));
+    const grav = world.engine.gravity || world.localWorld.gravity;
+    const g = grav.y * grav.scale * dt * dt;
+    const pts = [];
+    for (let i = 0; i < steps; i += 1) {
+      vx *= drag;
+      vy = vy * drag + g;
+      x += vx;
+      y += vy;
+      pts.push({ x, y });
+      if (y > GROUND_Y) break;
+    }
+    return pts;
+  }
+
+  drawAim() {
+    this.bandGfx.clear();
+    this.aimGfx.clear();
+    if (!this.bird || this.state !== 'aim') return;
+    const px = this.perch.x;
+    const py = this.perch.y;
+    if (this.dragging) {
+      // the band: a dark outline under a tan strap, from a twig fork to the bird
+      for (const ox of [-9, 9]) {
+        this.bandGfx.lineStyle(7, 0x3a2410, 1).lineBetween(px + ox, py, this.bird.x, this.bird.y);
+        this.bandGfx.lineStyle(3.5, 0xd8b077, 1).lineBetween(px + ox, py, this.bird.x, this.bird.y);
+      }
+      const pts = this.flightPath(
+        this.bird.x, this.bird.y,
+        (px - this.bird.x) * LAUNCH_POWER, (py - this.bird.y) * LAUNCH_POWER, AIM_STEPS,
+      );
+      pts.forEach((p, i) => {
+        if (i % 3 !== 2) return;
+        const k = 1 - i / AIM_STEPS;
+        this.aimGfx.fillStyle(0xffffff, 0.25 + 0.6 * k).fillCircle(p.x, p.y, 2.2 + 2.4 * k);
+      });
+    }
   }
 
   // ----------------------------------------------------------- collisions ----
   bindCollisions() {
+    this.lastBump = 0;
     this.matter.world.on('collisionstart', (event) => {
-      if (this.gameState !== 'playing' || this.roundResolved || this.wrongResolving || !this.launched || !this.bird) return;
-      const birdBody = this.bird.body;
       for (const pair of event.pairs) {
-        let otherBody = null;
-        if (pair.bodyA === birdBody) otherBody = pair.bodyB;
-        else if (pair.bodyB === birdBody) otherBody = pair.bodyA;
-        else continue;
+        const a = pair.bodyA;
+        const b = pair.bodyB;
+        const birdBody = this.bird && this.bird.body;
+        const isBird = birdBody && (a === birdBody || b === birdBody);
+        const other = a === birdBody ? b : a;
 
-        // nest round: raw sensor body carries its nest + word
-        if (otherBody.isNestSensor) {
-          if (otherBody.word.ro === this.answer.ro) this.onCorrectNest(otherBody.nest);
-          else this.onWrongNest(otherBody.nest);
-          break;
+        // impact sound, scaled by how hard and rate-limited
+        const speed = Math.max(a.speed || 0, b.speed || 0);
+        if (speed > 1.6 && this.time.now - this.lastBump > 70 && !other.isSensor) {
+          this.lastBump = this.time.now;
+          const k = Math.min(1, speed / 16);
+          if (isBird) sfx.thud(k); else sfx.wood(k * 0.7);
+          if (isBird && k > 0.35) {
+            this.dust.explode(6, this.bird.x, this.bird.y + BIRD_R * 0.6);
+            if (k > 0.6) this.cameras.main.shake(110, 0.0035);
+          }
         }
-        // knock-down round: a target game object
-        const other = otherBody.gameObject;
-        if (other && other.isTarget) {
-          if (other.word.ro === this.answer.ro) this.onCorrect(other);
-          else this.onWrong(other);
+
+        if (!isBird || !this.birdLive || this.state !== 'flight') continue;
+        const target = other.nestTarget || (other.gameObject && other.gameObject.target);
+        if (target && !target.dead) {
+          if (target.option.key === this.round.answer) this.onCorrect(target);
+          else this.onWrong(target);
           break;
         }
       }
     });
   }
 
-  onCorrect(targetGo) {
-    this.roundResolved = true;
-    this.score += 1;
-    this.wordsCleared += 1;
-    this.birdsLeft -= 1; // the launch that scored still costs a bird
+  // -------------------------------------------------------------- results ----
+  onCorrect(target) {
+    this.state = 'resolve';
+    this.birdLive = false;
+    const round = this.round;
+    const firstTry = this.roundWrong === 0;
+    this.streak = firstTry ? this.streak + 1 : 0;
+    const points = 100 + (firstTry ? 50 : 0) + (firstTry ? Math.min(this.streak - 1, 5) * 10 : 0);
+    this.score += points;
+    this.results[round.index] = { word: round.word, firstTry };
+    progress.record(round.word.ro, firstTry);
+
+    const at = targetPos(target);
+    sfx.correct();
+    this.stars.explode(22, at.x, at.y);
+    this.floatText(`+${points}`, at.x, at.y - 40, COLOR.gold);
+    if (target.sprite) {
+      this.tweens.add({ targets: target.sprite, scaleX: target.sprite.scaleX * 1.12, scaleY: target.sprite.scaleY * 1.12, duration: 140, yoyo: true });
+    }
+    if (round.prompt.afterMain) this.setPrompt(round.prompt.afterMain, round.prompt.sub, round.prompt.audio);
     this.updateHud();
 
-    targetGo.setTint(0x9fffb3);
-    this.feedbackText.setColor('#9fffb3');
-    this.feedbackText.setText('Bravo! 🎉\n' + this.answer.ro + ' = ' + this.answer.en);
+    const nest = target.kind === 'nest';
+    const [ro, en] = nest ? [PHRASES.goodNight.ro, PHRASES.goodNight.en] : Phaser.Utils.Array.GetRandom(PRAISE);
+    this.showBanner(round.reveal.main, round.reveal.sub, `${ro}  ·  ${en}`);
+    if (nest) this.landInNest(target);
 
-    this.time.delayedCall(1300, () => {
-      if (this.wordsCleared >= this.wordsToClear) this.onLevelClear();
-      else if (this.birdsLeft <= 0) this.onGameOver();
-      else this.startRound();
-    });
+    const clips = nest ? [PHRASES.goodNight.a, ...round.reveal.audio] : round.reveal.audio;
+    let advanced = false;
+    const advance = () => {
+      if (advanced) return;
+      advanced = true;
+      if (round.index + 1 < this.total) this.startRound(round.index + 1);
+      else this.finish();
+    };
+    const spoken = voice.play(clips, { onDone: () => this.time.delayedCall(650, advance) });
+    this.time.delayedCall(Math.max(2400, spoken + 1500), advance); // in case a clip never reports back
   }
 
-  onWrong(targetGo) {
-    // feedback only; the bird will come to rest and be spent in recycleBird
-    targetGo.setTint(0xff8a8a);
-    this.feedbackText.setColor('#ffb3b3');
-    this.feedbackText.setText('Nu... that is "' + targetGo.word.ro + '"');
-    this.time.delayedCall(900, () => {
-      if (!this.roundResolved) this.feedbackText.setText('');
-      if (targetGo.active) targetGo.clearTint();
-    });
-  }
+  onWrong(target) {
+    this.roundWrong += 1;
+    this.wrongAnswers += 1;
+    this.streak = 0;
+    this.birdLive = false;
+    target.dead = true;
+    const at = targetPos(target);
+    sfx.wrong();
+    this.cameras.main.shake(140, 0.004);
+    this.feathers.explode(8, this.bird.x, this.bird.y);
+    this.bird.setTexture('bird-grumpy');
 
-  recycleBird() {
-    // reached only on a miss / wrong hit (round not yet resolved)
-    this.birdsLeft -= 1;
-    this.clearBird();
-    this.updateHud();
-    if (this.birdsLeft <= 0) this.onGameOver();
-    else this.spawnBird();
-  }
-
-  // ----------------------------------------------------------- end states ----
-  onLevelClear() {
-    this.gameState = 'paused';
-    this.clearBird();
-    this.clearTargets();
-    this.clearPrompts();
-    this.levelIndex += 1;
-    if (this.levelIndex >= LEVELS.length) {
-      this.showOverlay('Felicitări! 🎉', 'You cleared every level!\nFinal score: ' + this.score, 'Tap to play again', () => this.restartGame());
+    // say what was actually hit, so a miss still teaches
+    const o = target.option;
+    if (o.word) {
+      this.showToast(`✗  ${o.kind === 'text' ? o.text : o.word.ro} = ${o.gloss || o.word.en}`);
+      voice.play(o.word.a.w);
     } else {
-      this.showOverlay('Level Complete! ✨', 'Score: ' + this.score, 'Tap for the next theme', () => this.startLevel());
+      this.showToast(`✗  ${o.text}${o.gloss ? ` = ${o.gloss}` : ''}`);
+    }
+    target.mark = txt(this, at.x, at.y, '✗', { fontSize: '54px', color: '#d2413a', fontStyle: '800', stroke: '#ffffff', strokeThickness: 5 })
+      .setOrigin(0.5).setDepth(5.6).setAlpha(0.9);
+    if (target.sprite) target.sprite.setTint(0xb9b3c9);
+    if (target.tag) target.tag.setTint(0xb9b3c9);
+
+    if (target.kind === 'nest') {
+      this.state = 'resolve';
+      this.wrongNest(target, () => { this.state = 'flight'; this.recycleBird(true); });
+    } else {
+      this.time.delayedCall(1500, () => { if (this.state === 'flight') this.recycleBird(true); });
     }
   }
 
-  onGameOver() {
-    this.gameState = 'paused';
+  // A bird is used up: by a miss, or after a wrong answer.
+  recycleBird(afterWrong = false) {
+    if (this.state !== 'flight') return;
+    this.birdsLeft -= 1;
     this.clearBird();
-    this.clearTargets();
-    this.clearPrompts();
-    this.showOverlay('Out of birds 😴', 'Score: ' + this.score + '  ·  Reached Level ' + (this.levelIndex + 1), 'Tap to try again', () => this.restartGame());
+    this.clearSpeech();
+    this.updateHud();
+    if (this.birdsLeft <= 0) { this.fail(); return; }
+    this.spawnBird();
+    this.state = 'aim';
+    if (afterWrong) this.time.delayedCall(250, () => { if (this.state === 'aim') this.speakPrompt(); });
   }
 
-  restartGame() {
-    this.score = 0;
-    this.levelIndex = 0;
-    this.startLevel();
+  floatText(str, x, y, color) {
+    const t = txt(this, x, y, str, { fontFamily: FONT_DISPLAY, fontSize: '28px', color, fontStyle: '700', stroke: '#2a1a4f', strokeThickness: 5 })
+      .setOrigin(0.5).setDepth(31);
+    this.tweens.add({ targets: t, y: y - 50, alpha: 0, duration: 1100, ease: 'Cubic.easeOut', onComplete: () => t.destroy() });
   }
 
-  clearPrompts() {
-    this.promptText.setText('');
-    this.hintText.setText('');
-    this.feedbackText.setText('');
+  // ---------------------------------------------------------------- nests ----
+  // Take the bird off physics and tween its pose by hand.
+  poseBird() {
+    const b = this.bird;
+    b.setStatic(true);
+    b.setVelocity(0, 0);
+    b.setAngularVelocity(0);
+    const pp = { x: b.x, y: b.y, rot: Phaser.Math.Angle.Wrap(b.rotation) };
+    const apply = () => { if (this.bird === b && b.active) { b.setPosition(pp.x, pp.y); b.setRotation(pp.rot); } };
+    return { pp, apply };
   }
 
-  // ------------------------------------------------------------- overlays ----
-  showToast(text) {
-    const t = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT * 0.32, text, {
-      fontFamily: 'Georgia, serif',
-      fontSize: '30px',
-      color: '#ffffff',
-      fontStyle: 'bold',
-      backgroundColor: '#0b1026cc',
-      padding: { x: 18, y: 10 },
-    }).setOrigin(0.5).setDepth(30).setAlpha(0);
-    this.tweens.add({ targets: t, alpha: 1, duration: 250, yoyo: true, hold: 1100, onComplete: () => t.destroy() });
+  // The payoff: the bird drifts up, then settles into the bowl and sleeps.
+  landInNest(target) {
+    const n = target.nest;
+    const { pp, apply } = this.poseBird();
+    this.tweens.add({
+      targets: pp, x: n.restX, y: n.restY - n.h * 0.38, rot: 0, duration: 620, ease: 'Sine.easeOut', onUpdate: apply,
+      onComplete: () => {
+        if (!this.bird) return;
+        this.bird.setTexture('bird-asleep');
+        this.bird.setDepth(4); // behind the nest's front rim
+        sfx.sleep();
+        this.showZzz(n.cx + n.w * 0.3, n.top - 12);
+        this.tweens.add({ targets: this.zzz, y: n.top - 26, alpha: { from: 0, to: 1 }, duration: 700, yoyo: true, repeat: -1 });
+        this.tweens.add({
+          targets: pp, y: n.restY, rot: Phaser.Math.DegToRad(this.bird.flipX ? 6 : -6),
+          duration: 620, ease: 'Sine.easeInOut', onUpdate: apply,
+        });
+      },
+    });
   }
 
-  showOverlay(title, subtitle, prompt, onTap) {
-    const bg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x0b1026, 0.8).setDepth(40);
-    const t = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 70, title, {
-      fontFamily: 'Georgia, serif', fontSize: '56px', color: '#ffd166', fontStyle: 'bold', align: 'center',
-    }).setOrigin(0.5).setDepth(41);
-    const s = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 5, subtitle, {
-      fontFamily: 'system-ui, sans-serif', fontSize: '24px', color: '#eef2ff', align: 'center', lineSpacing: 8,
-    }).setOrigin(0.5).setDepth(41);
-    const p = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 90, prompt, {
-      fontFamily: 'system-ui, sans-serif', fontSize: '22px', color: '#9fffb3', fontStyle: 'bold',
-    }).setOrigin(0.5).setDepth(41);
-    this.tweens.add({ targets: p, alpha: 0.3, duration: 700, yoyo: true, repeat: -1 });
-
-    this.overlayObjects = [bg, t, s, p];
-    // ignore taps for a beat so the click that ended the round doesn't skip it
-    this.overlayTap = null;
-    this.time.delayedCall(450, () => { this.overlayTap = onTap; });
+  // The wrong nest: the bird settles in, then realizes, protests in Romanian,
+  // shakes its head, and glides back to the perch.
+  wrongNest(target, onDone) {
+    const n = target.nest;
+    const { pp, apply } = this.poseBird();
+    this.bird.setDepth(4);
+    const step = (props, duration, ease, next) => this.tweens.add({
+      targets: pp, ...props, duration, ease, onUpdate: apply, onComplete: () => { if (this.bird) next(); },
+    });
+    step({ x: n.restX, y: n.restY, rot: 0 }, 300, 'Sine.easeOut', () => {
+      this.time.delayedCall(450, () => {
+        if (!this.bird) return;
+        this.bird.setDepth(7);
+        this.speak(n.cx, n.top - 30, PHRASES.notMine);
+        step({ y: n.restY - 20 }, 150, 'Quad.easeOut', () => {
+          const x0 = pp.x;
+          this.tweens.add({
+            targets: pp, x: { from: x0 - 6, to: x0 + 6 }, duration: 80, yoyo: true, repeat: 3, onUpdate: apply,
+            onComplete: () => this.time.delayedCall(1500, () => {
+              if (!this.bird) return;
+              this.clearSpeech();
+              step({ x: this.perch.x, y: this.perch.y, rot: 0 }, 800, 'Sine.easeInOut', onDone);
+            }),
+          });
+        });
+      });
+    });
   }
 
-  hideOverlay() {
-    if (!this.overlayObjects) return;
-    this.overlayObjects.forEach((o) => o.destroy());
-    this.overlayObjects = null;
+  speak(x, y, phrase) {
+    this.clearSpeech();
+    this.speech = this.add.container(x, y).setDepth(31);
+    const ro = txt(this, 0, -11, phrase.ro, { fontFamily: FONT_DISPLAY, fontSize: '21px', color: COLOR.ink, fontStyle: '600' }).setOrigin(0.5);
+    const en = txt(this, 0, 13, phrase.en, { fontSize: '15px', color: '#6b4a3a', fontStyle: '700' }).setOrigin(0.5);
+    const w = Math.max(ro.width, en.width) + 28;
+    const g = this.add.graphics();
+    g.fillStyle(0xfff6dc, 0.97).fillRoundedRect(-w / 2, -30, w, 60, 14);
+    g.lineStyle(2.5, 0x4a2148, 1).strokeRoundedRect(-w / 2, -30, w, 60, 14);
+    g.fillStyle(0xfff6dc, 0.97).fillTriangle(-8, 29, 8, 29, 0, 42);
+    this.speech.add([g, ro, en]);
+    // keep the bubble on screen
+    this.speech.x = Phaser.Math.Clamp(x, view.left + w / 2 + 8, view.right - w / 2 - 8);
+    this.speech.y = Math.max(y, 104);
+    this.speech.setScale(0.6);
+    this.tweens.add({ targets: this.speech, scale: 1, duration: 180, ease: 'Back.easeOut' });
+    voice.play(phrase.a);
+  }
+
+  clearSpeech() {
+    if (this.speech) { this.speech.destroy(); this.speech = null; }
+  }
+
+  // ----------------------------------------------------------- end states ----
+  finish() {
+    this.state = 'done';
+    this.hint.setVisible(false);
+    this.clearBird();
+    destroyTargets(this, this.targets);
+    this.targets = [];
+    this.ropeGfx.clear();
+    this.hideBanner();
+    this.setPrompt('', '', null);
+    this.backdrop.setNight(1, 2200);
+
+    const stars = this.wrongAnswers === 0 ? 3 : this.wrongAnswers <= 2 ? 2 : 1;
+    this.score += this.birdsLeft * 20; // unused birds count
+    const stanza = POEM.stanzas[progress.clears % POEM.stanzas.length];
+    progress.recordLevel(this.topicId, this.tierId, stars, this.score);
+    this.updateHud();
+    sfx.fanfare();
+    this.time.delayedCall(700, () => this.showResults(stars, stanza));
+  }
+
+  showResults(stars, stanza) {
+    const objs = [];
+    const add = (o) => { objs.push(o); return o; };
+    add(this.add.rectangle(W / 2, H / 2, 4000, H * 2, 0x0d0830, 0.45).setDepth(39).setInteractive());
+    add(panel(this, W / 2, 304, 940, 470));
+
+    const lx = 300; // left column: how it went
+    add(txt(this, lx, 104, 'Noapte bună!', { fontFamily: FONT_DISPLAY, fontSize: '40px', color: COLOR.gold, fontStyle: '600' }).setOrigin(0.5).setDepth(41));
+    add(txt(this, lx, 140, `${this.topic.ro} · ${this.session.tier.ro} complete`, { fontSize: '17px', color: COLOR.pale, fontStyle: '700' }).setOrigin(0.5).setDepth(41));
+    for (let i = 0; i < 3; i += 1) {
+      const on = i < stars;
+      const s = add(txt(this, lx - 62 + i * 62, 190, '★', { fontSize: '58px', color: on ? COLOR.gold : '#5a5390', fontStyle: '800' }).setOrigin(0.5).setDepth(41));
+      if (on) {
+        s.setScale(0);
+        this.tweens.add({ targets: s, scale: 1, duration: 320, delay: 250 + i * 280, ease: 'Back.easeOut', onStart: () => sfx.star(i) });
+      }
+    }
+    const first = this.results.filter((r) => r && r.firstTry).length;
+    add(txt(this, lx, 240, `Score ${this.score}   ·   ${first} of ${this.total} right first time`, { fontSize: '18px', color: '#ffffff', fontStyle: '700' }).setOrigin(0.5).setDepth(41));
+
+    // the words practiced: gold = right first time, coral = needed another try
+    this.results.forEach((r, i) => {
+      if (!r) return;
+      const cx = lx - 147 + (i % 4) * 98;
+      const cy = 292 + Math.floor(i / 4) * 78;
+      const g = add(this.add.graphics().setDepth(41));
+      g.fillStyle(r.firstTry ? 0x3a3477 : 0x5a2d4a, 1).fillRoundedRect(cx - 45, cy - 34, 90, 68, 12);
+      g.lineStyle(2, r.firstTry ? 0xffd166 : 0xff9f80, 1).strokeRoundedRect(cx - 45, cy - 34, 90, 68, 12);
+      add(this.add.image(cx, cy - 11, emojiKey(this, r.word.emoji)).setDisplaySize(36, 36).setDepth(42));
+      const label = add(txt(this, cx, cy + 19, r.word.ro, { fontFamily: FONT_DISPLAY, fontSize: '16px', color: '#ffffff', fontStyle: '500' }).setOrigin(0.5).setDepth(42));
+      label.setScale(Math.min(1, 82 / label.width));
+      const zone = add(this.add.zone(cx, cy, 90, 68).setInteractive({ useHandCursor: true }).setDepth(43));
+      zone.on('pointerup', () => voice.play(r.word.a.e ?? r.word.a.w));
+    });
+
+    // right column: a stanza of the poem the game is named for
+    const rx = 742;
+    add(txt(this, rx, 100, '— Mihai Eminescu, „Somnoroase păsărele” —', { fontSize: '14px', color: COLOR.pale, fontStyle: '700' }).setOrigin(0.5).setDepth(41));
+    add(txt(this, rx, 176, stanza.ro.join('\n'), { fontFamily: FONT_POEM, fontSize: '23px', color: COLOR.cream, fontStyle: 'italic', align: 'center', lineSpacing: 5 }).setOrigin(0.5).setDepth(41));
+    add(txt(this, rx, 300, stanza.en.join('\n'), { fontSize: '15px', color: COLOR.pale, fontStyle: '600', align: 'center', lineSpacing: 3 }).setOrigin(0.5).setDepth(41));
+    add(button(this, rx, 372, '🔊  Listen', { w: 150, h: 42, fontSize: 18, onClick: () => voice.play(stanza.a) }));
+    this.time.delayedCall(1700, () => { if (this.state === 'done') voice.play([PHRASES.goodNight.a, stanza.a], { gap: 500 }); });
+
+    const next = this.nextLevel();
+    add(button(this, 250, 486, 'Topics', { w: 160, h: 50, fontSize: 21, onClick: () => this.scene.start('Map') }));
+    add(button(this, 440, 486, '↻  Again', { w: 170, h: 50, fontSize: 21, onClick: () => this.scene.restart({ topicId: this.topicId, tier: this.tierId }) }));
+    add(button(this, 712, 486, `${next.label}  ▶`, {
+      w: 320, h: 54, fontSize: 22, fill: 0xffd166, onClick: () => this.scene.start('Game', { topicId: next.topicId, tier: next.tier }),
+    }));
+  }
+
+  // After a level: the same topic one tier deeper, then the next topic.
+  nextLevel() {
+    if (this.tierId < TIERS.length) {
+      const t = TIERS[this.tierId];
+      return { topicId: this.topicId, tier: t.id, label: `${t.ro} · ${t.en}` };
+    }
+    const i = TOPICS.findIndex((t) => t.id === this.topicId);
+    const topic = TOPICS[(i + 1) % TOPICS.length];
+    return { topicId: topic.id, tier: 1, label: `${topic.icon} ${topic.ro}` };
+  }
+
+  fail() {
+    this.state = 'done';
+    this.clearBird();
+    this.hideBanner();
+    voice.stop();
+    sfx.fail();
+    const objs = [];
+    objs.push(this.add.rectangle(W / 2, H / 2, 4000, H * 2, 0x0d0830, 0.5).setDepth(39).setInteractive());
+    objs.push(panel(this, W / 2, 290, 560, 300));
+    objs.push(this.add.image(W / 2, 196, 'bird-asleep').setDisplaySize(96, 96).setDepth(41));
+    objs.push(txt(this, W / 2, 262, PHRASES.tryAgain.ro, { fontFamily: FONT_DISPLAY, fontSize: '38px', color: COLOR.gold, fontStyle: '600' }).setOrigin(0.5).setDepth(41));
+    objs.push(txt(this, W / 2, 304, 'Try again — the birds ran out before bedtime.', { fontSize: '18px', color: COLOR.pale, fontStyle: '700' }).setOrigin(0.5).setDepth(41));
+    button(this, W / 2 - 110, 372, 'Topics', { w: 170, h: 52, fontSize: 21, onClick: () => this.scene.start('Map') });
+    button(this, W / 2 + 110, 372, '↻  Again', { w: 190, h: 52, fontSize: 21, fill: 0xffd166, onClick: () => this.scene.restart({ topicId: this.topicId, tier: this.tierId }) });
+    this.time.delayedCall(500, () => voice.play(PHRASES.tryAgain.a));
+  }
+
+  // ----------------------------------------------------------------- menu ----
+  openMenu() {
+    if (this.menu || this.state === 'done') return;
+    const was = this.state;
+    this.matter.world.pause();
+    this.state = 'menu';
+    const objs = [];
+    const close = () => {
+      objs.forEach((o) => o.destroy());
+      this.menu = null;
+      this.matter.world.resume();
+      this.state = was;
+    };
+    objs.push(this.add.rectangle(W / 2, H / 2, 4000, H * 2, 0x0d0830, 0.5).setDepth(39).setInteractive());
+    objs.push(panel(this, W / 2, 292, 380, 372));
+    objs.push(txt(this, W / 2, 142, 'Pauză · Paused', { fontFamily: FONT_DISPLAY, fontSize: '28px', color: COLOR.gold, fontStyle: '600' }).setOrigin(0.5).setDepth(41));
+    const label = (name, on) => `${name}: ${on ? 'on' : 'off'}`;
+    objs.push(button(this, W / 2, 204, '▶  Continue', { w: 280, h: 50, fontSize: 21, fill: 0xffd166, onClick: close }));
+    const mus = button(this, W / 2, 264, label('🎵  Music', progress.settings.music), {
+      w: 280, h: 50, fontSize: 21,
+      onClick: () => { progress.setSetting('music', !progress.settings.music); applySettings(); mus.label.setText(label('🎵  Music', progress.settings.music)); },
+    });
+    const snd = button(this, W / 2, 324, label('🔊  Sound', progress.settings.sound), {
+      w: 280, h: 50, fontSize: 21,
+      onClick: () => { progress.setSetting('sound', !progress.settings.sound); applySettings(); snd.label.setText(label('🔊  Sound', progress.settings.sound)); },
+    });
+    objs.push(mus, snd);
+    objs.push(button(this, W / 2, 384, 'Topics', { w: 280, h: 50, fontSize: 21, onClick: () => { this.matter.world.resume(); this.scene.start('Map'); } }));
+    objs.push(txt(this, W / 2, 440, 'Leaving ends this level.', { fontSize: '14px', color: COLOR.pale, fontStyle: '600' }).setOrigin(0.5).setDepth(41));
+    this.menu = objs;
   }
 
   // --------------------------------------------------------------- update ----
   update() {
-    if (this.zzz && this.bird && !this.launched) {
-      const bob = Math.sin(this.time.now / 300) * 3;
-      this.zzz.setPosition(this.bird.x + 16, this.bird.y - 28 + bob);
+    if (this.zzz && this.bird && this.state === 'aim' && !this.dragging) {
+      this.zzz.setY(this.zzzBase + Math.sin(this.time.now / 320) * 3);
     }
+    if (this.targets.length && this.round && this.round.mechanic === 'signs') drawRopes(this.ropeGfx, this.targets);
+    this.targets.forEach((t) => { if (t.mark && t.sprite && t.sprite.active) t.mark.setPosition(t.sprite.x, t.sprite.y); });
+    this.drawAim();
 
-    if (this.targets) {
-      // knock-down targets move (dynamic); nest labels are static
-      this.targets.forEach((t) => {
-        if (t.go && t.go.active) t.label.setPosition(t.go.x, t.go.y);
-      });
+    if (this.state !== 'flight' || !this.bird) return;
+    this.flightFrames += 1;
+    // dotted trail of the flight just taken, to judge the next shot against
+    if (this.birdLive && this.flightFrames % 4 === 0 && this.trail.length < 70) {
+      this.trail.push({ x: this.bird.x, y: this.bird.y });
+      this.trailGfx.fillStyle(0xffffff, 0.42).fillCircle(this.bird.x, this.bird.y, 2.6);
     }
-
-    this.drawBands();
-
-    if (this.gameState === 'playing' && this.launched && !this.roundResolved && !this.wrongResolving) this.checkBirdSpent();
-  }
-
-  drawBands() {
-    this.bandGfx.clear();
-    this.aimGfx.clear();
-    if (this.launched || !this.bird) return;
-
-    this.bandGfx.lineStyle(6, 0x3a2410, 1);
-    this.bandGfx.lineBetween(this.perch.x - 8, this.perch.y, this.bird.x, this.bird.y);
-    this.bandGfx.lineBetween(this.perch.x + 8, this.perch.y, this.bird.x, this.bird.y);
-
-    if (this.dragging) {
-      let px = this.bird.x;
-      let py = this.bird.y;
-      // Trace the bird's ACTUAL flight: Matter's velocity moves the body ~0.5 px
-      // per frame of displacement, with ~0.11 px/frame^2 effective gravity. (The
-      // old preview treated velocity as displacement and overshot ~2x.)
-      const DISP = 0.5;
-      let svx = (this.perch.x - this.bird.x) * LAUNCH_POWER * DISP;
-      let svy = (this.perch.y - this.bird.y) * LAUNCH_POWER * DISP;
-      this.aimGfx.fillStyle(0xffffff, 0.5);
-      for (let i = 0; i < 48; i += 1) {
-        px += svx;
-        py += svy;
-        svy += 0.11;
-        if (i % 2 === 0) this.aimGfx.fillCircle(px, py, 3);
-        if (py > GROUND_Y) break;
-      }
-    }
-  }
-
-  checkBirdSpent() {
-    if (!this.bird) return;
+    if (!this.birdLive) return; // a wrong answer is already being resolved
     const v = this.bird.body.velocity;
-    const speed = Math.hypot(v.x, v.y);
-    const offscreen = this.bird.x < -60 || this.bird.x > GAME_WIDTH + 60 || this.bird.y > GAME_HEIGHT + 60;
-    if (speed < 0.4 && !offscreen) this.restFrames += 1;
-    else this.restFrames = 0;
-    if (offscreen || this.restFrames > 50) this.recycleBird();
+    const off = this.bird.x < view.left - 80 || this.bird.x > view.right + 80 || this.bird.y > H + 80;
+    this.restFrames = Math.hypot(v.x, v.y) < 0.4 && !off ? this.restFrames + 1 : 0;
+    if (off || this.restFrames > 45 || this.flightFrames > 900) this.recycleBird(false);
   }
 }
