@@ -83,15 +83,52 @@ export function buildTowers(scene, options) {
 }
 
 // ---- signs: labels hang from branches and swing when struck ----------------
-export function buildSigns(scene, options) {
+// Count the shots from this perch that strike the answer sign before anything
+// else. A shot counts only if the bird stays on screen the whole way and keeps
+// clear of every other sign (with a margin, since signs sway), the side walls,
+// and the ground. `answer` and `others` are sign centers; `size` is the plank.
+// buildSigns uses it to reject layouts where the answer is boxed in by other
+// signs or can only be reached by a lob over the top of the screen.
+export function signShots(scene, perch, answer, others, size, stopAt = Infinity) {
+  const halfW = (size.w - 4) / 2;
+  const halfH = (size.h - 2) / 2;
+  const within = (q, c, r) => Math.hypot(
+    Math.max(Math.abs(q.x - c.x) - halfW, 0), Math.max(Math.abs(q.y - c.y) - halfH, 0),
+  ) < r;
+  let wins = 0;
+  for (let a = 0; a < 360; a += 2) {
+    const cos = Math.cos(Phaser.Math.DegToRad(a));
+    const sin = Math.sin(Phaser.Math.DegToRad(a));
+    for (let p = 30; p <= MAX_PULL; p += 3) {
+      const from = scene.holdPoint(perch, -cos * p, -sin * p);
+      const pts = scene.flightPath(from.x, from.y, cos * p * LAUNCH_POWER, sin * p * LAUNCH_POWER, 260);
+      for (const q of pts) {
+        if (q.x < BIRD_R || q.x > W - BIRD_R || q.y < BIRD_R || q.y > GROUND_Y - BIRD_R) break;
+        if (others.some((o) => within(q, o, BIRD_R + 10))) break;
+        if (within(q, answer, BIRD_R)) { wins += 1; break; }
+      }
+      if (wins >= stopAt) return wins;
+    }
+  }
+  return wins;
+}
+
+export function buildSigns(scene, options, answerKey) {
   const n = options.length;
+  // Of the 5,580 shots signShots tries, a typical layout has about 220 that
+  // work; below this many the answer needs a shot too exact to find by aiming.
+  const MIN_SHOTS = 40;
+  const answerAt = options.findIndex((o) => o.key === answerKey);
   const size = labelSize(scene, options, { w: 96, h: 96 }, { max: 160, h: 58 });
   const boxOf = (a, rope) => new Phaser.Geom.Rectangle(
     a.x - size.w / 2 - 22, a.y, size.w + 44, rope + size.h + 16,
   );
 
-  // Choose anchors whose signs cannot touch, and a perch clear of all of them.
+  // Choose anchors whose signs cannot touch, a perch clear of all of them, and
+  // an answer sign with enough ways to reach it. If no layout has enough, use
+  // the one that came closest.
   let chosen = null;
+  let closest = null;
   for (let attempt = 0; attempt < 400 && !chosen; attempt += 1) {
     const anchors = shuffle(HANG_ANCHORS).slice(0, n)
       .map((a) => ({ ...a, rope: Phaser.Math.Between(30, 52) }));
@@ -107,8 +144,15 @@ export function buildSigns(scene, options) {
     const perch = shuffle(BIRD_PERCHES).find((p) => centers.every(
       (c) => dist(p, c) > 190 && Math.abs(p.x - c.x) > 100,
     ));
-    if (perch) chosen = { anchors, perch };
+    if (!perch) continue;
+    if (answerAt < 0) { chosen = { anchors, perch }; break; }
+    const shots = signShots(
+      scene, perch, centers[answerAt], centers.filter((_, i) => i !== answerAt), size, MIN_SHOTS,
+    );
+    if (shots >= MIN_SHOTS) chosen = { anchors, perch };
+    else if (!closest || shots > closest.shots) closest = { anchors, perch, shots };
   }
+  chosen = chosen || closest;
   if (!chosen) {
     chosen = {
       anchors: HANG_ANCHORS.slice(0, n).map((a) => ({ ...a, rope: 40 })),

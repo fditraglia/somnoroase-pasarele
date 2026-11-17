@@ -275,7 +275,7 @@ export default class GameScene extends Phaser.Scene {
 
     const { mechanic, options } = this.round;
     const built = mechanic === 'towers' ? buildTowers(this, options)
-      : mechanic === 'signs' ? buildSigns(this, options)
+      : mechanic === 'signs' ? buildSigns(this, options, this.round.answer)
         : buildNests(this, options, this.landing, this.round.answer);
     this.targets = built.targets;
     this.perch = built.perch;
