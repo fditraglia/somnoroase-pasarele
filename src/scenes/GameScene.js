@@ -338,6 +338,7 @@ export default class GameScene extends Phaser.Scene {
     this.input.on('pointerdown', (pointer, over) => {
       if (this.state !== 'aim' || !this.bird || this.dragging || over.length) return;
       this.dragStart = worldPoint(this, pointer).clone();
+      this.pull = new Phaser.Math.Vector2(0, 0);
       this.dragging = true;
       this.pullStep = 0;
       this.bird.setTexture('bird-fly');
@@ -350,7 +351,9 @@ export default class GameScene extends Phaser.Scene {
       const p = worldPoint(this, pointer);
       const d = new Phaser.Math.Vector2(p.x - this.dragStart.x, p.y - this.dragStart.y);
       if (d.length() > MAX_PULL) d.setLength(MAX_PULL);
-      this.bird.setPosition(this.perch.x + d.x, this.perch.y + d.y);
+      this.pull = d;
+      const at = this.holdPoint(this.perch, d.x, d.y);
+      this.bird.setPosition(at.x, at.y);
       if (Math.abs(d.x) > 4) this.bird.setFlipX(d.x > 0); // it will fly the other way
       const step = Math.floor(d.length() / 16);
       if (step !== this.pullStep) { this.pullStep = step; sfx.stretch(d.length() / MAX_PULL); }
@@ -362,8 +365,10 @@ export default class GameScene extends Phaser.Scene {
     const release = () => {
       if (!this.dragging || !this.bird) return;
       this.dragging = false;
-      const dx = this.perch.x - this.bird.x;
-      const dy = this.perch.y - this.bird.y;
+      // the launch follows the pull itself, which can be longer than the
+      // distance the bird was actually drawn back (see holdPoint)
+      const dx = -this.pull.x;
+      const dy = -this.pull.y;
       if (Math.hypot(dx, dy) < 14) { // too small to count: settle back to sleep
         this.bird.setPosition(this.perch.x, this.perch.y);
         this.bird.setTexture('bird-sleepy');
@@ -374,6 +379,23 @@ export default class GameScene extends Phaser.Scene {
     };
     this.input.on('pointerup', release);
     this.input.on('pointerupoutside', release);
+  }
+
+  // Where the bird is held for a pull of (dx, dy) from this perch. It is drawn
+  // back along the pull, but stops where its body would enter a side wall or
+  // the ground: a bird released from inside a solid body is thrown out of it
+  // by the engine instead of flying. The launch speed still comes from the
+  // full pull, so a perch near an edge keeps its whole range of shots.
+  holdPoint(perch, dx, dy) {
+    let k = 1;
+    const minX = view.left + BIRD_R + 1;
+    const maxX = view.right - BIRD_R - 1;
+    const maxY = GROUND_Y - BIRD_R - 1;
+    if (perch.x + dx < minX) k = Math.min(k, (minX - perch.x) / dx);
+    if (perch.x + dx > maxX) k = Math.min(k, (maxX - perch.x) / dx);
+    if (perch.y + dy > maxY) k = Math.min(k, (maxY - perch.y) / dy);
+    k = Math.max(0, k);
+    return { x: perch.x + dx * k, y: perch.y + dy * k };
   }
 
   launch(vx, vy) {
@@ -425,7 +447,7 @@ export default class GameScene extends Phaser.Scene {
       }
       const pts = this.flightPath(
         this.bird.x, this.bird.y,
-        (px - this.bird.x) * LAUNCH_POWER, (py - this.bird.y) * LAUNCH_POWER, AIM_STEPS,
+        -this.pull.x * LAUNCH_POWER, -this.pull.y * LAUNCH_POWER, AIM_STEPS,
       );
       pts.forEach((p, i) => {
         if (i % 3 !== 2) return;

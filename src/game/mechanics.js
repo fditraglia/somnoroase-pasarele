@@ -11,10 +11,12 @@ export const NEST_ANCHORS = [
   { x: 507, y: 443 }, { x: 875, y: 438 }, { x: 795, y: 344 }, { x: 174, y: 368 },
   { x: 323, y: 297 }, { x: 518, y: 234 }, { x: 555, y: 108 }, { x: 184, y: 112 },
 ];
+// Keep perches below the prompt bar (66 high): a bird on the topmost twig, at
+// (565, 50), sat behind the prompt and could barely be seen.
 export const BIRD_PERCHES = [
   { x: 641, y: 415 }, { x: 883, y: 443 }, { x: 915, y: 241 }, { x: 946, y: 316 },
   { x: 38, y: 313 }, { x: 95, y: 111 }, { x: 534, y: 303 }, { x: 780, y: 81 },
-  { x: 565, y: 50 }, { x: 335, y: 372 }, { x: 329, y: 190 },
+  { x: 335, y: 372 }, { x: 329, y: 190 },
 ];
 // Undersides of branches from which a sign can hang with room to swing.
 export const HANG_ANCHORS = [
@@ -69,7 +71,14 @@ export function buildTowers(scene, options) {
     return target;
   });
 
-  const perch = Phaser.Utils.Array.GetRandom(BIRD_PERCHES.filter((p) => p.x < 340));
+  // A perch on the left, with room between the bird and the nearest tower: to
+  // the side of its plank, or well above it. A bird resting against the plank
+  // has no clear shot at any other tower.
+  const left = startX - size.w / 2;
+  const top = GROUND_Y - heights[0] * 60 - size.h;
+  const open = BIRD_PERCHES.filter((p) => p.x < 340
+    && (p.x + BIRD_R + 60 <= left || p.y + BIRD_R + 50 <= top));
+  const perch = Phaser.Utils.Array.GetRandom(open) || BIRD_PERCHES[4];
   return { targets, perch };
 }
 
@@ -182,7 +191,8 @@ export function nestShots(scene, perch, shape, others = [], stopAt = Infinity) {
       const vx = cos * p * LAUNCH_POWER;
       const vy = sin * p * LAUNCH_POWER;
       // the bird is released from where it was drawn back to, not from the perch
-      const pts = scene.flightPath(perch.x - cos * p, perch.y - sin * p, vx, vy, 260);
+      const from = scene.holdPoint(perch, -cos * p, -sin * p);
+      const pts = scene.flightPath(from.x, from.y, vx, vy, 260);
       for (let i = 1; i < pts.length; i += 1) {
         const q = pts[i];
         if (q.x < BIRD_R || q.x > W - BIRD_R) break; // would bounce off a side wall
